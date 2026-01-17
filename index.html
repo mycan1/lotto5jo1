@@ -30,22 +30,21 @@
     <div id="status-text" class="status">전체데이터 분석 대기 완료</div>
 
     <div class="btn-container">
-        <button class="btn-gold" id="btn5" onclick="process('5')">5조합 (압축 12수)</button>
-        <button class="btn-gold" id="btn10" onclick="process('10')">10조합 (데이터 20수)</button>
+        <button class="btn-gold" id="btn5" onclick="process('5')">5조합 생성</button>
+        <button class="btn-gold" id="btn10" onclick="process('10')">10조합 생성</button>
         <button class="btn-dark" onclick="location.href='mailto:admin@test.com'">관리자 쪽지</button>
         <button class="btn-dark" onclick="alert('1122회~1205회 데이터 100% 대조 완료')">데이터 확인</button>
     </div>
 
     <div id="console">▶ 내 원본만이 진실이다.
-▶ 전체데이터 기반 (랜덤 제거 모드)
+▶ 전체데이터 기반 (압축수 비노출 모드)
 =========================================</div>
 
     <script>
-        // [사용자 설정]
         const WAIT_TIME_MINUTES = 30; 
         const ADMIN_PW = "7777";
 
-        // [전체데이터] 1122회 ~ 1205회 (총 84회분) - 생략 없이 100% 수록
+        // [전체데이터] 1122회 ~ 1205회 (총 84회분)
         const entireData = [
             [1205,1,4,16,23,31,41],[1204,8,16,28,30,31,44],[1203,3,6,18,29,35,39],[1202,5,12,21,33,37,40],[1201,7,9,24,27,35,36],
             [1200,1,2,4,16,20,32],[1199,16,24,25,30,31,32],[1198,26,30,33,38,39,41],[1197,1,5,7,26,28,43],[1196,8,12,15,29,40,45],
@@ -98,7 +97,10 @@
             localStorage.setItem('lastUseTime', new Date().getTime().toString());
             const box = document.getElementById('console');
             const pool = getPool(mode);
-            box.innerHTML = `▶ [${mode === '5' ? '압축12수' : '확장20수'}] 추출 완료\n▶ 압축 10수: ${pool.slice(0, 10).join(', ')}\n` + "=".repeat(35) + "\n";
+            
+            // [수정 완료] 화면에 압축수 텍스트 노출 제거
+            box.innerHTML = `▶ [${mode}조합] 추출 완료\n` + "=".repeat(35) + "\n";
+            
             const cnt = (mode === '5') ? 5 : 10;
             for (let i = 0; i < cnt; i++) { box.innerHTML += getCombo(pool).join('  ') + "\n"; }
             if (WAIT_TIME_MINUTES > 0) startTimer(WAIT_TIME_MINUTES * 60000);
