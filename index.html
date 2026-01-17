@@ -6,24 +6,23 @@
     <title>GOD OF LOTTO</title>
     <style>
         body { background-color: #121212; color: #FFD700; font-family: 'Malgun Gothic', sans-serif; text-align: center; padding: 20px; }
-        .header { margin-bottom: 30px; }
+        .header { margin-bottom: 20px; }
         h1 { color: #D4AF37; font-size: 2.5rem; margin-bottom: 5px; font-weight: 900; }
-        .status { color: #00FFCC; font-weight: bold; margin-bottom: 20px; }
-        .btn-container { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 25px; }
+        .status { color: #00FFCC; font-weight: bold; margin-bottom: 20px; font-size: 18px; }
+        .btn-container { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 25px; }
         button { 
-            width: 180px; height: 70px; border: none; border-radius: 5px; cursor: pointer;
-            font-size: 16px; font-weight: bold; transition: 0.3s;
+            width: 280px; height: 60px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 18px; font-weight: bold; transition: 0.3s;
         }
         .btn-gold { background-color: #D4AF37; color: black; }
-        .btn-dark { background-color: #2A2A2A; color: white; }
-        button:hover { opacity: 0.8; }
+        .btn-dark { background-color: #333; color: white; }
+        button:hover { transform: scale(1.02); }
         button:disabled { background-color: #444; color: #888; cursor: not-allowed; }
         #console {
-            width: 90%; max-width: 440px; height: 300px; background-color: #1E1E1E;
+            width: 95%; max-width: 440px; height: 320px; background-color: #1E1E1E;
             margin: 0 auto; padding: 15px; border-radius: 5px;
             text-align: left; overflow-y: auto; white-space: pre-wrap;
-            font-family: 'Consolas', monospace; font-size: 15px; color: #FFD700;
-            border: 1px solid #333;
+            font-family: 'Consolas', monospace; font-size: 16px; color: #FFD700; border: 2px solid #333;
         }
     </style>
 </head>
@@ -31,26 +30,25 @@
 
     <div class="header">
         <h1>GOD OF LOTTO</h1>
-        <div class="status" id="status-text">분석 가능 횟수: 2회 남음</div>
+        <div id="status-text" class="status">분석 준비 완료</div>
     </div>
 
     <div class="btn-container">
-        <button class="btn-gold" id="btn5" onclick="process('5')">5조합 생성하기<br>(압축 12수)</button>
-        <button class="btn-gold" id="btn10" onclick="process('10')">10조합 생성하기<br>(20수 확장)</button>
-        <button class="btn-dark" onclick="alert('인증 게시판 준비 중입니다.')">당첨 인증</button>
+        <button class="btn-gold" id="btn5" onclick="process('5')">5조합 생성 (압축 12수)</button>
+        <button class="btn-gold" id="btn10" onclick="process('10')">10조합 생성 (20수 확장)</button>
+        <button class="btn-dark" onclick="alert('인증 게시판 준비 중입니다.')">당첨 인증 게시판</button>
         <button class="btn-dark" onclick="alert('기부처 선정 중입니다.')">기부하기</button>
     </div>
 
     <div id="console">▶ 내 원본만이 진실이다.
-▶ 번호 생성 후 드래그하여 복사하세요.
+▶ 번호 생성 후 복사해서 사용하세요.
 =========================================</div>
 
     <div style="margin-top: 50px; opacity: 0.1;">
-        <button onclick="adminReset()" style="background: none; border: 1px solid #333; color: #333; width: 60px; height: 25px; font-size: 9px;">ADMIN</button>
+        <button onclick="adminReset()" style="width: 100px; height: 30px; font-size: 12px; background: none; border: 1px solid #444; color: #555;">ADMIN</button>
     </div>
 
     <script>
-        // 전체데이터 (1122~1205회)
         const entireData = [
             [1205, 1, 4, 16, 23, 31, 41], [1204, 8, 16, 28, 30, 31, 44], [1203, 3, 6, 18, 29, 35, 39],
             [1202, 5, 12, 21, 33, 37, 40], [1201, 7, 9, 24, 27, 35, 36], [1200, 1, 2, 4, 16, 20, 32],
@@ -82,43 +80,69 @@
             [1124, 3, 8, 17, 30, 33, 34], [1123, 13, 19, 21, 24, 34, 35], [1122, 3, 6, 21, 30, 34, 35]
         ];
 
-        let usageCount = 0;
+        let waitTime = 30 * 60 * 1000; // 30분
+
+        function checkCooldown() {
+            const lastUse = localStorage.getItem('lastUseTime');
+            if (lastUse) {
+                const now = new Date().getTime();
+                const diff = now - parseInt(lastUse);
+                if (diff < waitTime) {
+                    startTimer(waitTime - diff);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function startTimer(remaining) {
+            document.getElementById('btn5').disabled = true;
+            document.getElementById('btn10').disabled = true;
+            
+            const timer = setInterval(() => {
+                remaining -= 1000;
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('status-text').innerText = "분석 가능";
+                    document.getElementById('btn5').disabled = false;
+                    document.getElementById('btn10').disabled = false;
+                } else {
+                    const min = Math.floor(remaining / 60000);
+                    const sec = Math.floor((remaining % 60000) / 1000);
+                    document.getElementById('status-text').innerText = `${min}분 ${sec}초 후 다시 하세요`;
+                }
+            }, 1000);
+        }
 
         function process(mode) {
-            if (usageCount >= 2) {
-                alert("금일 추출 횟수를 모두 사용하였습니다.");
-                return;
-            }
-            usageCount++;
-            document.getElementById('status-text').innerText = `분석 가능 횟수: ${2 - usageCount}회 남음`;
+            const now = new Date().getTime();
+            localStorage.setItem('lastUseTime', now.toString());
+            
             const consoleBox = document.getElementById('console');
-            consoleBox.innerHTML = `▶ [${mode}조합] 생성 완료 (${usageCount}/2회)\n` + "-".repeat(40) + "\n";
+            consoleBox.innerHTML = `▶ [${mode}조합] 생성 완료\n` + "-".repeat(40) + "\n";
             const pool = getPool(mode);
             const count = (mode === '5') ? 5 : 10;
             for (let i = 0; i < count; i++) {
                 const combo = getCombo(pool);
                 consoleBox.innerHTML += combo.join('  ') + "\n";
             }
-            consoleBox.innerHTML += "-".repeat(40) + "\n드래그 후 복사하세요.";
-            if (usageCount >= 2) {
-                document.getElementById('btn5').disabled = true;
-                document.getElementById('btn10').disabled = true;
-            }
+            consoleBox.innerHTML += "-".repeat(40) + "\n30분 후 다시 이용 가능합니다.";
+            
+            startTimer(waitTime);
         }
 
         function adminReset() {
             const pw = prompt("관리자 비밀번호를 입력하세요:");
             if (pw === "7777") {
-                usageCount = 0;
-                document.getElementById('status-text').innerText = `분석 가능 횟수: 2회 남음`;
-                document.getElementById('btn5').disabled = false;
-                document.getElementById('btn10').disabled = false;
-                alert("관리자 인증 성공: 횟수가 초기화되었습니다.");
+                localStorage.removeItem('lastUseTime');
+                location.reload(); 
+                alert("관리자 인증: 제한이 해제되었습니다.");
             } else {
-                alert("비밀번호가 틀렸습니다.");
+                alert("틀렸습니다.");
             }
         }
 
+        // 기존 로직 함수들 (getPool, getCombo 등)은 동일하게 유지
         function getPool(mode) {
             const allNums = entireData.flatMap(row => row.slice(1));
             const freq = {};
@@ -145,6 +169,9 @@
                 }
             }
         }
+
+        // 페이지 로드 시 쿨다운 확인
+        checkCooldown();
     </script>
 </body>
 </html>
