@@ -37,16 +37,20 @@
     <div class="btn-container">
         <button class="btn-gold" id="btn5" onclick="process('5')">5조합 생성하기<br>(압축 12수)</button>
         <button class="btn-gold" id="btn10" onclick="process('10')">10조합 생성하기<br>(20수 확장)</button>
-        <button class="btn-dark" onclick="alert('인증 게시판으로 이동합니다.')">당첨 인증</button>
-        <button class="btn-dark" onclick="alert('기부 페이지로 이동합니다.')">기부하기</button>
+        <button class="btn-dark" onclick="alert('인증 게시판 준비 중입니다.')">당첨 인증</button>
+        <button class="btn-dark" onclick="alert('기부처 선정 중입니다.')">기부하기</button>
     </div>
 
     <div id="console">▶ 내 원본만이 진실이다.
 ▶ 번호 생성 후 드래그하여 복사하세요.
 =========================================</div>
 
+    <div style="margin-top: 50px; opacity: 0.1;">
+        <button onclick="adminReset()" style="background: none; border: 1px solid #333; color: #333; width: 60px; height: 25px; font-size: 9px;">ADMIN</button>
+    </div>
+
     <script>
-        // 1. 전체데이터 (1122~1205회)
+        // 전체데이터 (1122~1205회)
         const entireData = [
             [1205, 1, 4, 16, 23, 31, 41], [1204, 8, 16, 28, 30, 31, 44], [1203, 3, 6, 18, 29, 35, 39],
             [1202, 5, 12, 21, 33, 37, 40], [1201, 7, 9, 24, 27, 35, 36], [1200, 1, 2, 4, 16, 20, 32],
@@ -85,26 +89,33 @@
                 alert("금일 추출 횟수를 모두 사용하였습니다.");
                 return;
             }
-
             usageCount++;
             document.getElementById('status-text').innerText = `분석 가능 횟수: ${2 - usageCount}회 남음`;
-            
             const consoleBox = document.getElementById('console');
             consoleBox.innerHTML = `▶ [${mode}조합] 생성 완료 (${usageCount}/2회)\n` + "-".repeat(40) + "\n";
-
             const pool = getPool(mode);
             const count = (mode === '5') ? 5 : 10;
-
             for (let i = 0; i < count; i++) {
                 const combo = getCombo(pool);
                 consoleBox.innerHTML += combo.join('  ') + "\n";
             }
-
             consoleBox.innerHTML += "-".repeat(40) + "\n드래그 후 복사하세요.";
-
             if (usageCount >= 2) {
                 document.getElementById('btn5').disabled = true;
                 document.getElementById('btn10').disabled = true;
+            }
+        }
+
+        function adminReset() {
+            const pw = prompt("관리자 비밀번호를 입력하세요:");
+            if (pw === "7777") {
+                usageCount = 0;
+                document.getElementById('status-text').innerText = `분석 가능 횟수: 2회 남음`;
+                document.getElementById('btn5').disabled = false;
+                document.getElementById('btn10').disabled = false;
+                alert("관리자 인증 성공: 횟수가 초기화되었습니다.");
+            } else {
+                alert("비밀번호가 틀렸습니다.");
             }
         }
 
@@ -112,26 +123,17 @@
             const allNums = entireData.flatMap(row => row.slice(1));
             const freq = {};
             allNums.forEach(n => freq[n] = (freq[n] || 0) + 1);
-            
             const goldNums = Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 8).map(Number);
             const recent15 = entireData.slice(0, 15).flatMap(row => row.slice(1));
             const unseen = Array.from({length: 45}, (_, i) => i + 1).filter(n => !recent15.includes(n));
             const longTerm = unseen.sort((a, b) => (freq[b] || 0) - (freq[a] || 0)).slice(0, 4);
-
             let compressed12 = Array.from(new Set([...goldNums, ...longTerm])).sort((a, b) => a - b);
             if (mode === '5') return compressed12;
-
             const others = Array.from({length: 45}, (_, i) => i + 1).filter(n => !compressed12.includes(n));
             const random8 = others.sort(() => 0.5 - Math.random()).slice(0, 8);
             return [...compressed12, ...random8].sort((a, b) => a - b);
         }
-            <div class="btn-container">
-    <button class="btn-gold" id="btn5" onclick="process('5')">5조합 생성하기<br>(압축 12수)</button>
-    <button class="btn-gold" id="btn10" onclick="process('10')">10조합 생성하기<br>(20수 확장)</button>
-    
-    <button class="btn-dark" onclick="alert('인증 게시판 준비 중입니다. 깃허브 Issues를 확인해주세요!')">당첨 인증</button>
-    <button class="btn-dark" onclick="alert('기부처를 선정 중입니다. 행운을 나눕니다!')">기부하기</button>
-</div>     
+
         function getCombo(pool) {
             while (true) {
                 const combo = [...pool].sort(() => 0.5 - Math.random()).slice(0, 6).sort((a, b) => a - b);
