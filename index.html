@@ -34,10 +34,15 @@
     </div>
 
     <div class="btn-container">
-        <button class="btn-gold" id="btn5" onclick="process('5')">5조합 생성 (압축 12수)</button>
-        <button class="btn-gold" id="btn10" onclick="process('10')">10조합 생성 (20수 확장)</button>
-        <button class="btn-dark" onclick="alert('인증 게시판 준비 중입니다.')">당첨 인증 게시판</button>
-        <button class="btn-dark" onclick="alert('기부처 선정 중입니다.')">기부하기</button>
+       <div class="btn-container">
+    <button class="btn-gold" id="btn5" onclick="process('5')">5조합 생성 (압축 12수)</button>
+    <button class="btn-gold" id="btn10" onclick="process('10')">10조합 생성 (20수 확장)</button>
+    
+    <button class="btn-dark" onclick="sendMessage()">관리자에게 쪽지 보내기</button>
+    
+    <button class="btn-dark" onclick="alert('인증 게시판 준비 중입니다.')">당첨 인증 게시판</button>
+    <button class="btn-dark" onclick="alert('기부처 선정 중입니다.')">기부하기</button>
+</div>
     </div>
 
     <div id="console">▶ 내 원본만이 진실이다.
