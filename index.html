@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOD OF LOTTO - ULTIMATE</title>
+    <title>GOD OF LOTTO - FULL DATA</title>
     <style>
         body { background-color: #121212; color: #FFD700; font-family: 'Malgun Gothic', sans-serif; text-align: center; padding: 20px; }
         h1 { color: #D4AF37; font-size: 2.5rem; margin-bottom: 10px; font-weight: 900; cursor: pointer; user-select: none; }
@@ -11,10 +11,11 @@
         .btn-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 440px; margin: 0 auto 25px auto; }
         button { 
             width: 48%; height: 60px; border: none; border-radius: 5px; cursor: pointer;
-            font-size: 15px; font-weight: bold; transition: 0.3s;
+            font-size: 16px; font-weight: bold; transition: 0.3s;
         }
-        .btn-gold { background-color: #D4AF37; color: black; width: 100%; margin-bottom: 5px; font-size: 18px; }
+        .btn-gold { background-color: #D4AF37; color: black; width: 100%; margin-bottom: 5px; }
         .btn-dark { background-color: #2A2A2A; color: white; border: 1px solid #444; }
+        button:disabled { background-color: #444; color: #888; cursor: not-allowed; }
         #console {
             width: 90%; max-width: 440px; height: 350px; background-color: #1E1E1E;
             margin: 0 auto; padding: 15px; border-radius: 5px;
@@ -26,59 +27,51 @@
 <body>
 
     <h1 onclick="adminReset()">GOD OF LOTTO</h1>
-    <div id="status-text" class="status">전체데이터 분석 대기 중</div>
+    <div id="status-text" class="status">전체데이터 분석 대기 완료</div>
 
     <div class="btn-container">
         <button class="btn-gold" id="btn5" onclick="process('5')">5조합 (압축 12수)</button>
-        <button class="btn-gold" id="btn10" onclick="process('10')">10조합 (데이터 기반 20수)</button>
-        <button class="btn-dark" onclick="sendMessage()">관리자 쪽지</button>
-        <button class="btn-dark" onclick="alert('당첨 인증 게시판 준비 중')">당첨 인증</button>
+        <button class="btn-gold" id="btn10" onclick="process('10')">10조합 (데이터 20수)</button>
+        <button class="btn-dark" onclick="location.href='mailto:admin@test.com'">관리자 쪽지</button>
+        <button class="btn-dark" onclick="alert('1122회~1205회 데이터 100% 대조 완료')">데이터 확인</button>
     </div>
 
     <div id="console">▶ 내 원본만이 진실이다.
-▶ 랜덤 제거: 오직 데이터 통계로만 추출
+▶ 전체데이터 기반 (랜덤 제거 모드)
 =========================================</div>
 
     <script>
-        // [관리자 설정]
+        // [사용자 설정]
         const WAIT_TIME_MINUTES = 30; 
         const ADMIN_PW = "7777";
 
-        // [전체데이터] 1122회 ~ 1205회 (84회분)
-        const entireData = [[
-        [1205, 1, 4, 16, 23, 31, 41], [1204, 8, 16, 28, 30, 31, 44], [1203, 3, 6, 18, 29, 35, 39],
-        [1202, 5, 12, 21, 33, 37, 40], [1201, 7, 9, 24, 27, 35, 36], [1200, 1, 2, 4, 16, 20, 32],
-        [1199, 16, 24, 25, 30, 31, 32], [1198, 26, 30, 33, 38, 39, 41], [1197, 1, 5, 7, 26, 28, 43],
-        [1196, 8, 12, 15, 29, 40, 45], [1195, 3, 15, 27, 33, 34, 36], [1194, 3, 13, 15, 24, 33, 37],
-        [1193, 6, 9, 16, 19, 24, 28], [1192, 10, 16, 23, 36, 39, 40], [1191, 1, 4, 11, 12, 20, 41],
-        [1190, 7, 9, 19, 23, 26, 45], [1189, 9, 19, 29, 35, 37, 38], [1188, 3, 4, 12, 19, 22, 27],
-        [1187, 5, 13, 26, 29, 37, 40], [1186, 2, 8, 13, 16, 23, 28], [1185, 6, 17, 22, 28, 29, 32],
-        [1184, 14, 16, 23, 25, 31, 37], [1183, 4, 15, 17, 23, 27, 36], [1182, 1, 13, 21, 25, 28, 31],
-        [1181, 8, 10, 14, 20, 33, 41], [1180, 6, 12, 18, 37, 40, 41], [1179, 3, 16, 18, 24, 40, 44],
-        [1178, 5, 6, 11, 27, 43, 44], [1177, 3, 7, 15, 16, 19, 43], [1176, 7, 9, 11, 21, 30, 35],
-        [1175, 3, 4, 6, 8, 32, 42], [1174, 8, 11, 14, 17, 36, 39], [1173, 1, 5, 18, 20, 30, 35],
-        [1172, 7, 9, 24, 40, 42, 44], [1171, 3, 6, 7, 11, 12, 17], [1170, 3, 13, 28, 34, 38, 42],
-        [1169, 5, 12, 24, 26, 39, 42], [1168, 9, 21, 24, 30, 33, 37], [1167, 8, 23, 31, 35, 39, 40],
-        [1166, 14, 23, 25, 27, 29, 42], [1165, 6, 7, 27, 29, 38, 45], [1164, 17, 18, 23, 25, 38, 39],
-        [1163, 2, 13, 15, 16, 33, 43], [1162, 20, 21, 22, 25, 28, 29], [1161, 2, 12, 20, 24, 34, 42],
-        [1160, 7, 13, 18, 36, 39, 45], [1159, 3, 9, 27, 28, 38, 39], [1158, 21, 25, 27, 32, 37, 38],
-        [1157, 5, 7, 12, 20, 25, 26], [1156, 30, 31, 34, 39, 41, 45], [1155, 10, 16, 19, 27, 37, 38],
-        [1154, 4, 8, 22, 26, 32, 38], [1153, 1, 9, 10, 13, 35, 44], [1152, 30, 31, 32, 35, 36, 37],
-        [1151, 2, 3, 9, 15, 27, 29], [1150, 8, 9, 18, 35, 39, 45], [1149, 8, 15, 19, 21, 32, 36],
-        [1148, 3, 6, 13, 15, 16, 22], [1147, 7, 11, 24, 26, 27, 37], [1146, 6, 11, 17, 19, 40, 43],
-        [1145, 2, 11, 31, 33, 37, 44], [1144, 3, 4, 12, 15, 26, 34], [1143, 10, 16, 17, 27, 28, 36],
-        [1142, 2, 8, 28, 30, 37, 41], [1141, 7, 11, 12, 21, 26, 35], [1140, 7, 10, 22, 29, 31, 38],
-        [1139, 5, 12, 15, 30, 37, 40], [1138, 14, 16, 19, 20, 29, 34], [1137, 4, 9, 12, 15, 33, 45],
-        [1136, 21, 33, 35, 38, 42, 44], [1135, 1, 6, 13, 19, 21, 33], [1134, 3, 7, 9, 13, 19, 24],
-        [1133, 13, 14, 20, 28, 29, 34], [1132, 6, 7, 19, 28, 34, 41], [1131, 1, 2, 6, 14, 27, 38],
-        [1130, 15, 19, 21, 25, 27, 28], [1129, 5, 10, 11, 17, 28, 34], [1128, 1, 5, 8, 16, 28, 33],
-        [1127, 10, 15, 24, 30, 31, 37], [1126, 4, 5, 9, 11, 37, 40], [1125, 6, 14, 25, 33, 40, 44],
-        [1124, 3, 8, 17, 30, 33, 34], [1123, 13, 19, 21, 24, 34, 35], [1122, 3, 6, 21, 30, 34, 35];
+        // [전체데이터] 1122회 ~ 1205회 (총 84회분) - 생략 없이 100% 수록
+        const entireData = [
+            [1205,1,4,16,23,31,41],[1204,8,16,28,30,31,44],[1203,3,6,18,29,35,39],[1202,5,12,21,33,37,40],[1201,7,9,24,27,35,36],
+            [1200,1,2,4,16,20,32],[1199,16,24,25,30,31,32],[1198,26,30,33,38,39,41],[1197,1,5,7,26,28,43],[1196,8,12,15,29,40,45],
+            [1195,3,15,27,33,34,36],[1194,3,13,15,24,33,37],[1193,6,9,16,19,24,28],[1192,10,16,23,36,39,40],[1191,1,4,11,12,20,41],
+            [1190,7,9,19,23,26,45],[1189,9,19,29,35,37,38],[1188,3,4,12,19,22,27],[1187,5,13,26,29,37,40],[1186,2,8,13,16,23,28],
+            [1185,6,17,22,28,29,32],[1184,14,16,23,25,31,37],[1183,4,15,17,23,27,36],[1182,1,13,21,25,28,31],[1181,8,10,14,20,33,41],
+            [1180,6,12,18,37,40,41],[1179,3,16,18,24,40,44],[1178,5,6,11,27,43,44],[1177,3,7,15,16,19,43],[1176,7,9,11,21,30,35],
+            [1175,3,4,6,8,32,42],[1174,8,11,14,17,36,39],[1173,1,5,18,20,30,35],[1172,7,9,24,40,42,44],[1171,3,6,7,11,12,17],
+            [1170,3,13,28,34,38,42],[1169,5,12,24,26,39,42],[1168,9,21,24,30,33,37],[1167,8,23,31,35,39,40],[1166,14,23,25,27,29,42],
+            [1165,6,7,27,29,38,45],[1164,17,18,23,25,38,39],[1163,2,13,15,16,33,43],[1162,20,21,22,25,28,29],[1161,2,12,20,24,34,42],
+            [1160,7,13,18,36,39,45],[1159,3,9,27,28,38,39],[1158,21,25,27,32,37,38],[1157,5,7,12,20,25,26],[1156,30,31,34,39,41,45],
+            [1155,10,16,19,27,37,38],[1154,4,8,22,26,32,38],[1153,1,9,10,13,35,44],[1152,30,31,32,35,36,37],[1151,2,3,9,15,27,29],
+            [1150,8,9,18,35,39,45],[1149,8,15,19,21,32,36],[1148,3,6,13,15,16,22],[1147,7,11,24,26,27,37],[1146,6,11,17,19,40,43],
+            [1145,2,11,31,33,37,44],[1144,3,4,12,15,26,34],[1143,10,16,17,27,28,36],[1142,2,8,28,30,37,41],[1141,7,11,12,21,26,35],
+            [1140,7,10,22,29,31,38],[1139,5,12,15,30,37,40],[1138,14,16,19,20,29,34],[1137,4,9,12,15,33,45],[1136,21,33,35,38,42,44],
+            [1135,1,6,13,19,21,33],[1134,3,7,9,13,19,24],[1133,13,14,20,28,29,34],[1132,6,7,19,28,34,41],[1131,1,2,6,14,27,38],
+            [1130,15,19,21,25,27,28],[1129,5,10,11,17,28,34],[1128,1,5,8,16,28,33],[1127,10,15,24,30,31,37],[1126,4,5,9,11,37,40],
+            [1125,6,14,25,33,40,44],[1124,3,8,17,30,33,34],[1123,13,19,21,24,34,35],[1122,3,6,21,30,34,35]
+        ];
+
         function checkCooldown() {
             const last = localStorage.getItem('lastUseTime');
             if (last && WAIT_TIME_MINUTES > 0) {
                 const diff = new Date().getTime() - parseInt(last);
-                if (diff < WAIT_TIME_MINUTES * 60000) { startTimer(WAIT_TIME_MINUTES * 60000 - diff); return true; }
+                const wait = WAIT_TIME_MINUTES * 60000;
+                if (diff < wait) { startTimer(wait - diff); return true; }
             }
             return false;
         }
@@ -105,39 +98,23 @@
             localStorage.setItem('lastUseTime', new Date().getTime().toString());
             const box = document.getElementById('console');
             const pool = getPool(mode);
-            
-            // 압축 10수는 무조건 출력
-            box.innerHTML = `▶ [${mode === '5' ? '압축12수' : '확장20수'}] 분석 완료\n▶ 압축 10수: ${pool.slice(0, 10).join(', ')}\n` + "=".repeat(35) + "\n";
-            
+            box.innerHTML = `▶ [${mode === '5' ? '압축12수' : '확장20수'}] 추출 완료\n▶ 압축 10수: ${pool.slice(0, 10).join(', ')}\n` + "=".repeat(35) + "\n";
             const cnt = (mode === '5') ? 5 : 10;
-            for (let i = 0; i < cnt; i++) {
-                box.innerHTML += getCombo(pool).join('  ') + "\n";
-            }
+            for (let i = 0; i < cnt; i++) { box.innerHTML += getCombo(pool).join('  ') + "\n"; }
             if (WAIT_TIME_MINUTES > 0) startTimer(WAIT_TIME_MINUTES * 60000);
         }
 
         function getPool(mode) {
             const all = entireData.flatMap(r => r.slice(1));
-            const freq = {}; all.forEach(n => freq[n] = (freq[n] || 0) + 1);
-            
-            // 빈도수 높은 순서대로 전체 정렬
-            const sortedByFreq = Object.keys(freq).sort((a, b) => freq[b] - freq[a]).map(Number);
-            
-            // 1. 압축 12수 로직
-            const gold = sortedByFreq.slice(0, 8); // 빈도 상위 8수
+            const f = {}; all.forEach(n => f[n] = (f[n] || 0) + 1);
+            const sortedByFreq = Object.keys(f).sort((a, b) => f[b] - f[a]).map(Number);
+            const gold = sortedByFreq.slice(0, 8);
             const r15 = entireData.slice(0, 15).flatMap(r => r.slice(1));
-            const unseen = Array.from({length: 45}, (_, i) => i + 1)
-                                .filter(n => !r15.includes(n))
-                                .sort((a, b) => (freq[b] || 0) - (freq[a] || 0));
-            const lt = unseen.slice(0, 4); // 미출현 중 빈도 높은 4수
-            
-            let pool = Array.from(new Set([...gold, ...lt])).sort((a, b) => a - b);
-            
-            if (mode === '5') return pool;
-
-            // 2. 20수 확장 로직 (랜덤 없이 빈도 순위로만 채움)
-            const extras = sortedByFreq.filter(n => !pool.includes(n)).slice(0, 20 - pool.length);
-            return [...pool, ...extras].sort((a, b) => a - b);
+            const lt = Array.from({length: 45}, (_, i) => i + 1).filter(n => !r15.includes(n)).sort((a, b) => (f[b] || 0) - (f[a] || 0)).slice(0, 4);
+            let p12 = Array.from(new Set([...gold, ...lt])).sort((a, b) => a - b);
+            if (mode === '5') return p12;
+            const extra = sortedByFreq.filter(n => !p12.includes(n)).slice(0, 20 - p12.length);
+            return [...p12, ...extra].sort((a, b) => a - b);
         }
 
         function getCombo(p) {
@@ -150,13 +127,11 @@
         }
 
         function adminReset() {
-            if (prompt("비밀번호") === ADMIN_PW) {
+            if (prompt("ADMIN PW") === ADMIN_PW) {
                 localStorage.removeItem('lastUseTime');
                 location.reload();
             }
         }
-
-        function sendMessage() { window.location.href = "mailto:admin@example.com"; }
         checkCooldown();
     </script>
 </body>
