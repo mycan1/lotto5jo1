@@ -18,7 +18,7 @@
         #gallery-section { width: 95%; max-width: 440px; margin: 25px auto; padding: 15px; background: #1a1a1a; border-radius: 10px; border: 1px solid #D4AF37; box-sizing: border-box; }
         .gallery-title { color: #D4AF37; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
         #photo-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 50px; }
-        .win-photo { width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 2px solid #444; }
+        .win-photo { width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 2px solid #444; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -28,7 +28,7 @@
     <div class="btn-container">
         <button class="btn-main" id="btn5" onclick="process('5')">5조합 생성 (AC 9-10)<div id="timer5" class="timer-overlay"></div></button>
         <button class="btn-main" id="btn10" onclick="process('10')">10조합 생성 (패턴 분석)<div id="timer10" class="timer-overlay"></div></button>
-        <button class="btn-sub" onclick="alert('기능 준비중')">마킹 보관함</button>
+        <button class="btn-sub" onclick="alert('기록 확인 버튼입니다.')">마킹 보관함</button>
         <button class="btn-sub" onclick="clearAll()">기록 삭제</button>
         <button class="btn-green" onclick="uploadWin()">🔥 당첨 인증 사진 올리기 (실시간 공유)</button>
     </div>
@@ -89,16 +89,17 @@
             startTimer(mode);
         }
 
-        // 서버 게시판 기능을 위한 업로드 로직
         function uploadWin() {
             var input = document.createElement('input');
             input.type = 'file'; input.accept = 'image/*';
             input.onchange = function(e) {
                 var file = e.target.files[0];
                 if (!file) return;
-                alert("서버에 등록 중입니다...");
+                alert("서버에 등록 중입니다. 잠시만 기다려주세요...");
                 var formData = new FormData();
                 formData.append('image', file);
+                
+                // Imgur 서버에 업로드하여 누구나 볼 수 있는 주소 생성
                 fetch('https://api.imgur.com/3/image', {
                     method: 'POST',
                     headers: { Authorization: 'Client-ID 546c25a59c58ad7' },
@@ -109,9 +110,9 @@
                         var url = res.data.link;
                         addPhoto(url);
                         saveHistory(url);
-                        alert("공유 완료!");
+                        alert("업로드 성공! 이제 다른 사람도 이 사진을 볼 수 있습니다.");
                     }
-                });
+                }).catch(err => alert("서버 오류입니다."));
             };
             input.click();
         }
@@ -124,7 +125,6 @@
             list.insertBefore(img, list.firstChild);
         }
 
-        // 실시간 확인을 위해 브라우저에 사진 주소를 임시 저장
         function saveHistory(url) {
             let history = JSON.parse(localStorage.getItem('win_photos') || '[]');
             history.unshift(url);
