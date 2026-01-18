@@ -3,27 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>신의 손 - 93 DATA COMMAND</title>
+    <title>신의 손 - 을지로 연합</title>
     <style>
+        /* 사장님 전용 럭셔리 블랙&골드 디자인 */
         body { background-color: #0c0c0c; color: #f2c94c; font-family: 'Malgun Gothic', sans-serif; text-align: center; padding: 15px; margin: 0; }
-        h1 { color: #d4a017; font-size: 2.5rem; margin-top: 10px; font-weight: 900; text-shadow: 2px 2px 8px rgba(212, 160, 23, 0.5); cursor: pointer; }
-        .info-box { color: #fff; font-size: 1rem; margin-bottom: 20px; background: #1a1a1a; padding: 10px 20px; border-radius: 50px; display: inline-block; border: 1px solid #d4a017; }
-        .btn-main { width: 100%; height: 75px; background: linear-gradient(180deg, #f2c94c, #d4a017); color: #000; font-size: 24px; font-weight: 900; border: none; border-radius: 15px; margin-bottom: 15px; cursor: pointer; }
-        #console { width: 100%; height: 420px; padding: 20px; background: #000; color: #f2c94c; border: 2px solid #333; border-radius: 20px; margin: 15px auto; text-align: left; overflow-y: auto; white-space: pre-wrap; font-size: 22px; font-weight: bold; border-top: 5px solid #d4a017; box-sizing: border-box; }
+        h1 { color: #d4a017; font-size: 2.8rem; margin-top: 15px; font-weight: 900; text-shadow: 2px 2px 12px rgba(212, 160, 23, 0.6); cursor: pointer; letter-spacing: -1px; }
+        .target-box { color: #fff; font-size: 1rem; margin-bottom: 25px; background: linear-gradient(145deg, #1a1a1a, #000); padding: 12px 25px; border-radius: 50px; display: inline-block; border: 1px solid #d4a017; box-shadow: 0 0 20px rgba(212, 160, 23, 0.3); font-weight: bold; }
+        .btn-main { width: 100%; height: 85px; background: linear-gradient(180deg, #f2c94c, #d4a017); color: #000; font-size: 28px; font-weight: 900; border: none; border-radius: 20px; margin-bottom: 20px; cursor: pointer; box-shadow: 0 6px 20px rgba(212, 160, 23, 0.5); transition: 0.2s; }
+        .btn-main:active { transform: scale(0.97); opacity: 0.9; }
+        #console { width: 100%; height: 450px; padding: 25px; background: #000; color: #f2c94c; border: 2px solid #1a1a1a; border-radius: 25px; margin: 15px auto; text-align: left; overflow-y: auto; white-space: pre-wrap; font-size: 25px; font-weight: 900; border-top: 6px solid #d4a017; box-sizing: border-box; line-height: 1.8; box-shadow: inset 0 0 20px rgba(212, 160, 23, 0.1); }
+        .footer-info { font-size: 0.8rem; color: #555; margin-top: 20px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
     <h1 onclick="location.reload()">신의 손</h1>
-    <div class="info-box">🛰️ 1205회 ~ 1190회 (정확히 93개) 데이터 가동</div>
+    <div class="target-box">🛰️ 을지로 사령부: 93개 데이터 동기화 완료</div>
     
-    <button class="btn-main" onclick="extract5()">💎 5조합 생성 (AC 9-10)</button>
+    <button class="btn-main" onclick="generate()">💎 5조합 생성 (AC 9-10)</button>
 
-    <div id="console">▶ 사장님, 파일 분석을 통해 93개 데이터를 확보했습니다.\n중략 없이 코드에 반영되었으니 즉시 추출하십시오.</div>
+    <div id="console">▶ 사장님, 을지로 연합 엔진 가동.\n파일에서 추출한 93개 데이터가 장전되었습니다.\n즉시 번호를 추출하십시오.</div>
+
+    <div class="footer-info">© 2026 SHIN-UI-SON SYSTEM. ALL RIGHTS RESERVED.</div>
 
     <script>
-        // [수정 라인 55] 사장님 파일에서 직접 추출한 무삭제 93개 데이터 리스트입니다.
-        const source93 = [
-            1, 4, 16, 23, 31, 41,  // 1205회
+        // [무삭제] 사장님 파일에서 직접 추출한 93개 오리지널 데이터 (중략 없음)
+        const master93 = [
+            1, 4, 16, 23, 31, 41, // 1205회
             8, 16, 28, 30, 31, 44, // 1204회
             3, 6, 18, 29, 35, 39,  // 1203회
             5, 12, 21, 33, 37, 40, // 1202회
@@ -38,42 +43,47 @@
             6, 9, 16, 19, 24, 28,  // 1193회
             10, 16, 23, 36, 39, 40,// 1192회
             1, 4, 11, 12, 20, 41,  // 1191회
-            7, 9, 19               // 1190회 앞부분 (총 93개 완벽)
+            7, 9, 19               // 1190회 (93개 완벽 일치)
         ];
 
-        const prevWin = [1, 4, 16, 23, 31, 41]; // 이월수 체크용
+        const lastWinNumbers = [1, 4, 16, 23, 31, 41]; 
 
         function getAC(arr) {
-            let s = new Set();
-            for(let i=0; i<6; i++) for(let j=i+1; j<6; j++) s.add(Math.abs(arr[i]-arr[j]));
-            return s.size - 5;
+            let diffs = new Set();
+            for(let i=0; i<6; i++) {
+                for(let j=i+1; j<6; j++) {
+                    diffs.add(Math.abs(arr[i]-arr[j]));
+                }
+            }
+            return diffs.size - 5;
         }
 
-        function extract5() {
-            const box = document.getElementById('console');
-            box.innerHTML = "▶ 93개 데이터 분석 결과 추출 중...\n\n";
-            let count = 0, safety = 0;
+        function generate() {
+            const screen = document.getElementById('console');
+            screen.innerHTML = "▶ 을지로 사령부 93개 데이터 분석 중...\n\n";
+            let found = 0, safety = 0;
             
-            while(count < 5 && safety < 50000) {
+            while(found < 5 && safety < 50000) {
                 safety++;
-                let res = [];
-                while(res.length < 6) {
-                    let num = source93[Math.floor(Math.random() * source93.length)];
-                    if(!res.includes(num)) res.push(num);
+                let temp = [];
+                while(temp.length < 6) {
+                    let pick = master93[Math.floor(Math.random() * master93.length)];
+                    if(!temp.includes(pick)) temp.push(pick);
                 }
-                res.sort((a,b) => a-b);
+                temp.sort((a,b) => a-b);
 
-                // AC 필터 9-10 [cite: 2026-01-11]
-                let ac = getAC(res);
-                if(ac < 9 || ac > 10) continue;
+                // [지시] AC 9-10 (5조 앞부분 로직)
+                let acVal = getAC(temp);
+                if(acVal < 9 || acVal > 10) continue;
 
-                // 이월수 필터 0~2개 [cite: 2026-01-18]
-                let carry = res.filter(n => prevWin.includes(n)).length;
-                if(carry > 2) continue;
+                // [지시] 이월수 0~2개 사이 [cite: 2026-01-18]
+                let carryOver = temp.filter(n => lastWinNumbers.includes(n)).length;
+                if(carryOver > 2) continue;
 
-                count++;
-                box.innerHTML += `(${count})  ${res.map(n=>n<10?'0'+n:n).join('   ')}  [AC:${ac}]\n`;
+                found++;
+                screen.innerHTML += `(${found}조)  ${temp.map(n=>n<10?'0'+n:n).join('   ')}  [AC:${acVal}]\n`;
             }
+            screen.scrollTop = 0;
         }
     </script>
 </body>
