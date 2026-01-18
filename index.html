@@ -11,19 +11,20 @@
         h1 { color: #f2c94c; font-size: 2.5rem; margin-top: 30px; font-weight: bold; cursor: pointer; }
         .target-box { color: #FFF; font-size: 1.1rem; margin-bottom: 20px; background: #1a1a1a; padding: 8px 15px; border-radius: 10px; display: inline-block; border: 2px solid #f2c94c; }
         .btn-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 400px; margin: 0 auto 15px auto; }
-        button { border: none; border-radius: 8px; cursor: pointer; font-size: 17px; font-weight: bold; }
+        button { border: none; border-radius: 8px; cursor: pointer; font-size: 17px; font-weight: bold; transition: 0.2s; }
         .btn-main { width: 100%; height: 55px; background-color: #d4a017; color: black; margin-bottom: 5px; }
         .btn-sub { width: 48.5%; height: 50px; background-color: #262626; color: white; border: 1px solid #333; }
         .btn-menu { width: 100%; height: 50px; background-color: #1a1a1a; color: #f2c94c; border: 2px dashed #f2c94c; margin-top: 10px; }
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; padding: 20px; }
-        .modal-content { background: #1a1a1a; width: 95%; max-width: 380px; margin: 0 auto; padding: 20px; border: 2px solid #f2c94c; border-radius: 15px; }
-        #console { width: 100%; height: 250px; padding: 15px; background: #1a1a1a; color: #f2c94c; border: 2px solid #333; border-radius: 12px; margin: 15px auto; text-align: left; overflow-y: auto; white-space: pre-wrap; box-sizing: border-box; }
-        .admin-input { width: 100%; height: 40px; margin-top: 10px; background: #000; color: #fff; border: 1px solid #f2c94c; text-align: center; }
+        .modal-content { background: #1a1a1a; width: 95%; max-width: 380px; margin: 0 auto; padding: 20px; border: 2px solid #f2c94c; border-radius: 15px; text-align: center; }
+        #console { width: 100%; height: 250px; padding: 15px; background: #1a1a1a; color: #f2c94c; border: 2px solid #333; border-radius: 12px; margin: 15px auto; text-align: left; overflow-y: auto; white-space: pre-wrap; box-sizing: border-box; font-size: 18px; font-weight: bold; }
+        .admin-input { width: 100%; height: 45px; margin: 15px 0; background: #000; color: #fff; border: 1px solid #f2c94c; text-align: center; font-size: 20px; letter-spacing: 5px; }
+        textarea { width: 100%; height: 100px; background: #000; color: #0f0; border: 1px solid #0f0; padding: 10px; box-sizing: border-box; font-size: 16px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
     <h1 onclick="location.reload()">신의 손</h1>
-    <div class="target-box" id="current-strategy">🎯 전략 대기 중...</div>
+    <div class="target-box" id="current-strategy">🎯 전략 분석 대기 중...</div>
     
     <div class="btn-container">
         <button class="btn-main" onclick="process('5')">5조합 생성 (AC 9-10)</button>
@@ -33,31 +34,28 @@
         <button class="btn-menu" onclick="showModal('menu')">📋 전략 메뉴판 (사령부)</button>
     </div>
 
-    <div id="console">▶ 사장님, 중앙 서버 연결 완료.</div>
-
+    <div id="console">▶ 사장님, 시스템 재설정 완료! 버튼을 눌러보세요.</div>
     <div id="modal"><div class="modal-content" id="modal-inner"></div></div>
 
     <script>
-        // [1] 서버 및 보안 설정
         const firebaseConfig = { databaseURL: "https://lotto-euljiro-default-rtdb.firebaseio.com/" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         
-        // 사령부 실시간 데이터 (18수 및 타겟 회차) [cite: 2026-01-11]
-        let cmd18Numbers = []; 
+        // 초기 기본 18수 세팅
+        let cmd18Numbers = [1,4,9,11,16,18,23,25,27,31,33,35,38,40,41,42,44,45]; 
         let currentRound = "1206회";
 
+        // 서버에서 실시간 전략 수신
         db.ref('hq_strategy').on('value', (snap) => {
             const data = snap.val();
-            if(data) {
+            if(data && data.nums) {
                 cmd18Numbers = data.nums;
                 currentRound = data.round;
                 document.getElementById('current-strategy').innerText = `🎯 ${currentRound} [${cmd18Numbers.length}수] 전략 가동`;
-                console.log("사령부 지시 수신:", cmd18Numbers);
             }
         });
 
-        // [2] 핵심 엔진 (사장님 5조 앞부분 로직) [cite: 2026-01-11, 2026-01-18]
         function getAC(arr) {
             let d = new Set();
             for(let i=0; i<6; i++) for(let j=i+1; j<6; j++) d.add(Math.abs(arr[i]-arr[j]));
@@ -65,48 +63,39 @@
         }
 
         function process(mode) {
-            if(cmd18Numbers.length < 6) { alert("사령부의 18수 하달을 기다려주세요."); return; }
             var box = document.getElementById('console');
-            box.innerHTML = `▶ [${mode}조합] 전략 생성 중...\n`;
-            
+            box.innerHTML = `▶ [${mode}조합] 생성 중...\n\n`;
             var gen = 0, safety = 0;
-            while(gen < (mode=='5'?5:10) && safety < 10000) {
+            while(gen < (mode=='5'?5:10) && safety < 5000) {
                 safety++;
                 var res = [];
-                // 사령부가 하달한 18수 내에서만 무작위 추출! [cite: 2026-01-18]
                 while(res.length < 6) {
                     var n = cmd18Numbers[Math.floor(Math.random() * cmd18Numbers.length)];
                     if(!res.includes(n)) res.push(n);
                 }
                 res.sort((a,b)=>a-b);
-                
                 if(mode=='5' && (getAC(res) < 9 || getAC(res) > 10)) continue;
-
                 gen++;
                 box.innerHTML += `(${gen}) ${res.map(n=>n<10?'0'+n:n).join('  ')}\n`;
             }
             box.scrollTop = box.scrollHeight;
         }
 
-        // [3] 관리자 비밀 통제창 [cite: 2026-01-18]
         function showModal(type) {
             var inner = document.getElementById('modal-inner');
             if(type == 'menu') {
                 inner.innerHTML = `
                     <h2 style="color:#f2c94c">📋 전략 메뉴판</h2>
-                    <button class="btn-main" style="height:45px; margin-bottom:10px;" onclick="alert('준비중')">📩 을지로 쪽지함</button>
-                    <div style="border:1px solid #333; padding:10px; border-radius:10px;">
-                        <p style="color:#888; font-size:12px;">사령부 전용 (비밀번호 입력)</p>
-                        <input type="password" id="admin-pw" class="admin-input" placeholder="Password">
-                        <button onclick="checkAdmin()" style="width:100%; margin-top:5px; height:35px; background:#444; color:#fff; border:none;">본부 접속</button>
-                    </div>
+                    <p style="color:#888;">관리자 인증이 필요합니다.</p>
+                    <input type="password" id="admin-pw" class="admin-input" placeholder="비밀번호">
+                    <button onclick="checkAdmin()" style="width:100%; height:45px; background:#d4a017; color:#000; border:none; font-weight:bold; border-radius:5px;">사령부 접속</button>
                 `;
             } else if(type == 'admin_panel') {
                 inner.innerHTML = `
                     <h2 style="color:#f2c94c">🕹️ 전략 사령부</h2>
-                    <p style="color:#fff; font-size:13px;">콤마(,)로 구분하여 18수 이상 입력</p>
-                    <textarea id="new-18" style="width:100%; height:80px; background:#000; color:#0f0; border:1px solid #0f0;">${cmd18Numbers.join(',')}</textarea>
-                    <button onclick="sendStrategy()" style="width:100%; height:50px; background:#0f0; color:#000; font-weight:bold; margin-top:10px;">🚀 전략 전송 (전체 배포)</button>
+                    <p style="color:#fff;">18수 입력 (쉼표로 구분)</p>
+                    <textarea id="new-18">${cmd18Numbers.join(',')}</textarea>
+                    <button onclick="sendStrategy()" style="width:100%; height:50px; background:#0f0; color:#000; font-weight:bold; border:none; border-radius:5px;">🚀 전략 전송 (전체 배포)</button>
                 `;
             }
             inner.innerHTML += '<button class="btn-sub" style="width:100%; margin-top:15px;" onclick="hideModal()">닫기</button>';
@@ -114,24 +103,29 @@
         }
 
         function checkAdmin() {
-            if(document.getElementById('admin-pw').value === "1234") { // 사장님 비밀번호 [cite: 2026-01-18]
+            var pw = document.getElementById('admin-pw').value;
+            if(pw === "1234") {
                 showModal('admin_panel');
-            } else { alert("권한이 없습니다."); }
+            } else {
+                alert("비밀번호가 틀렸습니다.");
+            }
         }
 
         function sendStrategy() {
-            const raw = document.getElementById('new-18').value;
-            const nums = raw.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
-            if(nums.length < 10) { alert("최소 10개 이상 입력하세요."); return; } // [cite: 2026-01-12]
+            const val = document.getElementById('new-18').value;
+            const nums = val.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+            if(nums.length < 10) { alert("최소 10개 이상 입력하세요."); return; }
             db.ref('hq_strategy').set({
                 nums: nums,
-                round: "1206회",
-                timestamp: Date.now()
-            }).then(() => { alert("전략이 모든 연합군에게 전송되었습니다!"); hideModal(); });
+                round: "1206회"
+            }).then(() => {
+                alert("전략 배포 완료! 모든 연합군에게 전송되었습니다.");
+                hideModal();
+            });
         }
 
         function hideModal() { document.getElementById('modal').style.display = 'none'; }
-        function clearAll() { if(confirm("초기화할까요?")) { location.reload(); } }
+        function clearAll() { if(confirm("초기화하시겠습니까?")) location.reload(); }
     </script>
 </body>
 </html>
