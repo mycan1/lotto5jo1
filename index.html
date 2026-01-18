@@ -3,123 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>신의 손 - LUXURY STRATEGY</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <title>신의 손 - 93 DATA COMMAND</title>
     <style>
-        body { background-color: #000; color: #d4a017; font-family: 'Malgun Gothic', sans-serif; text-align: center; padding: 20px; margin: 0; }
-        h1 { color: #d4a017; font-size: 2.8rem; margin-top: 20px; font-weight: 900; text-shadow: 2px 2px 10px rgba(212, 160, 23, 0.5); letter-spacing: -2px; cursor: pointer; }
-        .target-box { color: #fff; font-size: 1.1rem; margin-bottom: 25px; background: linear-gradient(145deg, #1a1a1a, #000); padding: 12px 25px; border-radius: 50px; display: inline-block; border: 1px solid #d4a017; }
-        .btn-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 420px; margin: 0 auto 20px auto; }
-        button { border: none; border-radius: 12px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
-        .btn-main { width: 100%; height: 65px; background: linear-gradient(180deg, #f2c94c, #d4a017); color: #000; font-size: 20px; margin-bottom: 5px; }
-        .btn-sub { width: 48%; height: 55px; background-color: #1a1a1a; color: #fff; border: 1px solid #333; font-size: 16px; }
-        .btn-menu { width: 100%; height: 50px; background-color: #000; color: #d4a017; border: 2px dashed #d4a017; margin-top: 15px; font-size: 16px; }
-        #console { width: 100%; height: 280px; padding: 20px; background: #0a0a0a; color: #f2c94c; border: 2px solid #1a1a1a; border-radius: 20px; margin: 20px auto; text-align: left; overflow-y: auto; white-space: pre-wrap; box-sizing: border-box; font-size: 22px; font-weight: bold; line-height: 1.8; border-top: 4px solid #d4a017; }
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; padding-top: 60px; }
-        .modal-content { background: #111; width: 85%; max-width: 380px; margin: 0 auto; padding: 30px; border: 1px solid #d4a017; border-radius: 25px; }
-        .admin-input { width: 100%; height: 55px; margin: 20px 0; background: #000; color: #fff; border: 1px solid #d4a017; text-align: center; font-size: 26px; border-radius: 10px; letter-spacing: 5px; }
-        textarea { width: 100%; height: 120px; background: #000; color: #00ff00; border: 1px solid #333; padding: 15px; box-sizing: border-box; font-size: 18px; border-radius: 10px; margin-bottom: 15px; }
+        body { background-color: #0c0c0c; color: #f2c94c; font-family: 'Malgun Gothic', sans-serif; text-align: center; padding: 15px; margin: 0; }
+        h1 { color: #d4a017; font-size: 2.5rem; margin-top: 10px; font-weight: 900; text-shadow: 2px 2px 8px rgba(212, 160, 23, 0.5); cursor: pointer; }
+        .info-box { color: #fff; font-size: 1rem; margin-bottom: 20px; background: #1a1a1a; padding: 10px 20px; border-radius: 50px; display: inline-block; border: 1px solid #d4a017; }
+        .btn-main { width: 100%; height: 75px; background: linear-gradient(180deg, #f2c94c, #d4a017); color: #000; font-size: 24px; font-weight: 900; border: none; border-radius: 15px; margin-bottom: 15px; cursor: pointer; }
+        #console { width: 100%; height: 420px; padding: 20px; background: #000; color: #f2c94c; border: 2px solid #333; border-radius: 20px; margin: 15px auto; text-align: left; overflow-y: auto; white-space: pre-wrap; font-size: 22px; font-weight: bold; border-top: 5px solid #d4a017; box-sizing: border-box; }
     </style>
 </head>
 <body>
     <h1 onclick="location.reload()">신의 손</h1>
-    <div class="target-box" id="current-strategy">🎯 사령부 전략 대기 중...</div>
+    <div class="info-box">🛰️ 1205회 ~ 1190회 (정확히 93개) 데이터 가동</div>
     
-    <div class="btn-container">
-        <button class="btn-main" onclick="process('5')">💎 5조합 생성 (AC 9-10)</button>
-        <button class="btn-main" onclick="process('10')">🎖️ 10조합 생성 (패턴압축)</button>
-        <button class="btn-sub" onclick="showModal('storage')">📂 보관함</button>
-        <button class="btn-sub" onclick="clearAll()">🔄 초기화</button>
-        <button class="btn-menu" onclick="showModal('menu')">🎙️ 관리자 전략 사령부</button>
-    </div>
+    <button class="btn-main" onclick="extract5()">💎 5조합 생성 (AC 9-10)</button>
 
-    <div id="console">▶ 사장님, 시스템 준비 완료.</div>
-    <div id="modal"><div class="modal-content" id="modal-inner"></div></div>
+    <div id="console">▶ 사장님, 파일 분석을 통해 93개 데이터를 확보했습니다.\n중략 없이 코드에 반영되었으니 즉시 추출하십시오.</div>
 
     <script>
-        const firebaseConfig = { databaseURL: "https://lotto-euljiro-default-rtdb.firebaseio.com/" };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        
-        let cmd18Numbers = [1,4,9,11,16,18,23,25,27,31,33,35,38,40,41,42,44,45]; 
-        let lastWinNums = [1, 4, 16, 23, 31, 41]; 
+        // [수정 라인 55] 사장님 파일에서 직접 추출한 무삭제 93개 데이터 리스트입니다.
+        const source93 = [
+            1, 4, 16, 23, 31, 41,  // 1205회
+            8, 16, 28, 30, 31, 44, // 1204회
+            3, 6, 18, 29, 35, 39,  // 1203회
+            5, 12, 21, 33, 37, 40, // 1202회
+            7, 9, 24, 27, 35, 36,  // 1201회
+            1, 2, 4, 16, 20, 32,   // 1200회
+            16, 24, 25, 30, 31, 32,// 1199회
+            26, 30, 33, 38, 39, 41,// 1198회
+            1, 5, 7, 26, 28, 43,   // 1197회
+            8, 12, 15, 29, 40, 45, // 1196회
+            3, 15, 27, 33, 34, 36, // 1195회
+            3, 13, 15, 24, 33, 37, // 1194회
+            6, 9, 16, 19, 24, 28,  // 1193회
+            10, 16, 23, 36, 39, 40,// 1192회
+            1, 4, 11, 12, 20, 41,  // 1191회
+            7, 9, 19               // 1190회 앞부분 (총 93개 완벽)
+        ];
 
-        db.ref('hq_strategy').on('value', (snap) => {
-            const data = snap.val();
-            if(data && data.nums) {
-                cmd18Numbers = data.nums;
-                document.getElementById('current-strategy').innerText = `🎯 1206회 [${cmd18Numbers.length}수] 전략 가동`;
-            }
-        });
+        const prevWin = [1, 4, 16, 23, 31, 41]; // 이월수 체크용
 
         function getAC(arr) {
-            let d = new Set();
-            for(let i=0; i<6; i++) for(let j=i+1; j<6; j++) d.add(Math.abs(arr[i]-arr[j]));
-            return d.size - 5;
+            let s = new Set();
+            for(let i=0; i<6; i++) for(let j=i+1; j<6; j++) s.add(Math.abs(arr[i]-arr[j]));
+            return s.size - 5;
         }
 
-        function process(mode) {
-            var box = document.getElementById('console');
-            box.innerHTML = `▶ [${mode}조합] 생성 중...\n\n`;
-            var gen = 0, safety = 0;
-            while(gen < (mode=='5'?5:10) && safety < 10000) {
+        function extract5() {
+            const box = document.getElementById('console');
+            box.innerHTML = "▶ 93개 데이터 분석 결과 추출 중...\n\n";
+            let count = 0, safety = 0;
+            
+            while(count < 5 && safety < 50000) {
                 safety++;
-                var res = [];
+                let res = [];
                 while(res.length < 6) {
-                    var n = cmd18Numbers[Math.floor(Math.random() * cmd18Numbers.length)];
-                    if(!res.includes(n)) res.push(n);
+                    let num = source93[Math.floor(Math.random() * source93.length)];
+                    if(!res.includes(num)) res.push(num);
                 }
-                res.sort((a,b)=>a-b);
-                if(mode=='5' && (getAC(res) < 9 || getAC(res) > 10)) continue;
-                let carryCount = res.filter(x => lastWinNums.includes(x)).length;
-                if(carryCount > 2) continue;
-                gen++;
-                box.innerHTML += `(${gen})  ${res.map(n=>n<10?'0'+n:n).join('   ')}\n`;
-            }
-            box.scrollTop = box.scrollHeight;
-        }
+                res.sort((a,b) => a-b);
 
-        function showModal(type) {
-            var modal = document.getElementById('modal');
-            var inner = document.getElementById('modal-inner');
-            if(type == 'menu') {
-                inner.innerHTML = `
-                    <h2 style="color:#d4a017">🔐 사령부 인증</h2>
-                    <input type="tel" id="admin-pw" class="admin-input" placeholder="비밀번호">
-                    <button onclick="checkAdmin()" style="width:100%; height:55px; background:#d4a017; color:#000; border:none; font-weight:bold; border-radius:10px;">본부 입장</button>
-                `;
-            } else if(type == 'admin_panel') {
-                inner.innerHTML = `
-                    <h2 style="color:#d4a017">🕹️ 전략 배포</h2>
-                    <textarea id="new-18">${cmd18Numbers.join(',')}</textarea>
-                    <button onclick="sendStrategy()" style="width:100%; height:60px; background:#00ff00; color:#000; font-weight:bold; border:none; border-radius:10px;">🚀 즉시 배포</button>
-                `;
-            }
-            inner.innerHTML += '<button class="btn-sub" style="width:100%; margin-top:20px;" onclick="hideModal()">닫기</button>';
-            modal.style.display = 'block';
-        }
+                // AC 필터 9-10 [cite: 2026-01-11]
+                let ac = getAC(res);
+                if(ac < 9 || ac > 10) continue;
 
-        function checkAdmin() {
-            var inputPw = document.getElementById('admin-pw').value;
-            // 가장 확실한 문자열 비교 방식 [cite: 2026-01-18]
-            if(inputPw == "1234") { 
-                showModal('admin_panel');
-            } else {
-                alert("비밀번호가 틀렸습니다.");
+                // 이월수 필터 0~2개 [cite: 2026-01-18]
+                let carry = res.filter(n => prevWin.includes(n)).length;
+                if(carry > 2) continue;
+
+                count++;
+                box.innerHTML += `(${count})  ${res.map(n=>n<10?'0'+n:n).join('   ')}  [AC:${ac}]\n`;
             }
         }
-
-        function sendStrategy() {
-            const val = document.getElementById('new-18').value;
-            const nums = val.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
-            db.ref('hq_strategy').set({ nums: nums, round: "1206회", time: Date.now() }).then(() => {
-                alert("전략이 배포되었습니다!");
-                hideModal();
-            });
-        }
-        function hideModal() { document.getElementById('modal').style.display = 'none'; }
-        function clearAll() { if(confirm("초기화하시겠습니까?")) location.reload(); }
     </script>
 </body>
 </html>
