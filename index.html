@@ -77,15 +77,16 @@
             for(var m=0; m<count; m++) {
                 var res = [];
                 var tempPool = pool.slice();
-                for(var p=0; p<6; p++) {
-                    var idx = Math.floor(Math.random() * tempPool.length);
-                    res.push(tempPool.splice(idx, 1)[0]);
+                for(var freq = {};
+            data.forEach(function(row, index) {
+                var weight = (index < 10) ? 2.0 : 0.5; 
+                for(var j=1; j<row.length; j++) {
+                    var n = row[j];
+                    freq[n] = (freq[n] || 0) + weight;
                 }
-                res.sort(function(a,b){ return a-b; });
-                var line = "";
-                for(var q=0; q<res.length; q++) {
-                    var num = res[q];
-                    line += (num < 10 ? "0"+num : num) + "  ";
+            });
+            var sorted = Object.keys(freq).sort(function(a, b) { return freq[b] - freq[a]; });
+            var pool = sorted.slice(0, mode === '5' ? 10 : 15);
                 }
                 box.innerHTML += line + "\n";
                 // 2. 마킹 리스트에 추가
