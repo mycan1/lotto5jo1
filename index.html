@@ -5,121 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>신의 손 - GOD OF LOTTO</title>
     <style>
-        /* [화면_디자인_설정] */
         body { background-color: #121212; color: #FFD700; font-family: 'Malgun Gothic', sans-serif; text-align: center; padding: 20px; }
-        
-        /* 제목: 신의 손 */
-        h1 { color: #D4AF37; font-size: 3rem; margin-bottom: 10px; font-weight: 900; cursor: pointer; user-select: none; text-shadow: 2px 2px 4px #000; }
-        h1:hover { color: #FFF; transition: 0.3s; }
-
-        /* 상태창 */
-        .status { color: #00FFCC; font-weight: bold; margin-bottom: 20px; font-size: 22px; border: 2px solid #333; padding: 10px; display: inline-block; border-radius: 10px; background: #1a1a1a; min-width: 250px; }
-
-        /* 버튼 컨테이너 */
+        h1 { color: #D4AF37; font-size: 3rem; margin-bottom: 10px; font-weight: 900; cursor: pointer; user-select: none; text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+        .status { color: #00FFCC; font-weight: bold; margin-bottom: 20px; font-size: 20px; border: 2px solid #333; padding: 10px; display: inline-block; border-radius: 10px; background: #1a1a1a; min-width: 280px; }
         .btn-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 440px; margin: 0 auto 25px auto; }
-        
-        button { 
-            width: 48%; height: 65px; border: none; border-radius: 8px; cursor: pointer;
-            font-size: 16px; font-weight: bold; transition: 0.3s; box-shadow: 0 4px #000;
-        }
-        button:active { transform: translateY(2px); box-shadow: 0 2px #000; }
-
+        button { width: 48%; height: 65px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
         .btn-gold { background-color: #D4AF37; color: black; width: 100%; margin-bottom: 5px; }
         .btn-dark { background-color: #2A2A2A; color: white; border: 1px solid #444; }
-        button:disabled { background-color: #444; color: #888; cursor: not-allowed; box-shadow: none; }
-
-        /* 결과창(콘솔) */
-        #console {
-            width: 90%; max-width: 440px; height: 320px; background-color: #1E1E1E;
-            margin: 0 auto; padding: 15px; border-radius: 10px;
-            text-align: left; overflow-y: auto; white-space: pre-wrap;
-            font-family: 'Consolas', monospace; font-size: 18px; color: #FFD700; border: 2px solid #333;
-        }
-
-        /* [쪽지함_디자인] */
-        #memo-modal { 
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 85%; max-width: 380px; background: #222; border: 3px solid #D4AF37; 
-            padding: 20px; z-index: 1000; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.8);
-        }
-        #memo-modal input, #memo-modal textarea { 
-            width: 95%; margin-bottom: 12px; padding: 12px; background: #333; 
-            color: #fff; border: 1px solid #555; border-radius: 5px; font-size: 15px;
-        }
-        .reply-box { margin-top: 15px; padding: 10px; background: #111; border-left: 4px solid #00FFCC; text-align: left; font-size: 14px; }
+        button:disabled { background-color: #444 !important; color: #888 !important; cursor: not-allowed; }
+        #console { width: 90%; max-width: 440px; height: 320px; background-color: #1E1E1E; margin: 0 auto; padding: 15px; border-radius: 10px; text-align: left; overflow-y: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 17px; color: #FFD700; border: 2px solid #333; }
+        #memo-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 380px; background: #222; border: 3px solid #D4AF37; padding: 20px; z-index: 1000; border-radius: 15px; }
+        input, textarea { width: 95%; margin-bottom: 12px; padding: 12px; background: #333; color: #fff; border: 1px solid #555; border-radius: 5px; }
+        .locked { display: none !important; }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-    <h1 onclick="adminReset()">신의 손</h1>
+    <h1 onclick="handleAdmin()">신의 손</h1>
     <div id="status-text" class="status">분석 대기 완료</div>
 
-    <div class="btn-container">
+    <div class="btn-container" id="controls">
         <button class="btn-gold" id="btn5" onclick="process('5')">5조합 생성 (남음:1)</button>
         <button class="btn-gold" id="btn10" onclick="process('10')">10조합 생성 (남음:1)</button>
         <button class="btn-dark" onclick="openMemo()">관리자 쪽지</button>
-        <button class="btn-dark" onclick="alert('1122회~1205회 데이터 100% 대조 완료')">데이터 확인</button>
+        <button class="btn-dark" onclick="showStats()">데이터 확인</button>
     </div>
 
-    <div id="console">▶ 내 원본만이 진실이다.
-▶ 신의 손 로직 가동 중...
+    <div id="console">▶ 태초의 데이터 동기화 완료.
+▶ 신의 손 로직이 사장님의 명령을 대기 중입니다.
 =========================================</div>
 
     <div id="memo-modal">
-        <h3 style="color:#D4AF37; margin-top:0;">관리자 쪽지함</h3>
-        <input type="text" id="memo-addr" placeholder="주소를 입력해 주세요">
-        <textarea id="memo-content" rows="4" placeholder="내용을 입력해 주세요"></textarea>
-        <button class="btn-gold" onclick="sendMemo()" style="width:100%; height:45px;">쪽지 보내기</button>
-        
-        <div id="reply-section" class="reply-box" style="display:none;">
-            <strong style="color:#00FFCC;">[관리자 답장]</strong><br>
-            <span id="reply-text"></span>
-        </div>
-        
-        <button onclick="closeMemo()" style="width:100%; background:none; color:#888; border:none; margin-top:15px; cursor:pointer;">창 닫기</button>
+        <h3 style="color:#D4AF37;">쪽지함</h3>
+        <input type="text" id="memo-addr" placeholder="주소 입력">
+        <textarea id="memo-content" rows="4" placeholder="내용 입력"></textarea>
+        <button class="btn-gold" onclick="sendMemo()" style="width:100%">보내기</button>
+        <div id="reply-box" style="margin-top:15px; color:#00FFCC; display:none; font-size:14px; border-top:1px solid #444; padding-top:10px;"></div>
+        <button onclick="closeMemo()" style="width:100%; background:none; color:#888; border:none; margin-top:10px;">닫기</button>
     </div>
 
     <script>
-        /* [기본_규칙_데이터] */
-        const WAIT_TIME_MINUTES = 1;
-        const ADMIN_PW = "7777";
+        const WAIT_TIME = 60000;
+        const ADMIN_UNLOCK = "8459";
+        const ADMIN_RESET = "8495";
+        
+        let pwFailCount = parseInt(localStorage.getItem('pwFail')) || 0;
+        let extractionLog = JSON.parse(localStorage.getItem('extractionLog')) || { '5': 0, '10': 0, 'history': [] };
         let counts = { '5': 1, '10': 1 };
         let fixedPool = { '5': null, '10': null };
 
-        // [과거_당첨_목록] 1122회~1205회 원본 데이터
+        // [과거_당첨_목록] 1122회~1205회 데이터
         const entireData = [[1205,1,4,16,23,31,41],[1204,8,16,28,30,31,44],[1203,3,6,18,29,35,39],[1202,5,12,21,33,37,40],[1201,7,9,24,27,35,36],[1200,1,2,4,16,20,32],[1199,16,24,25,30,31,32],[1198,26,30,33,38,39,41],[1197,1,5,7,26,28,43],[1196,8,12,15,29,40,45],[1195,3,15,27,33,34,36],[1194,3,13,15,24,33,37],[1193,6,9,16,19,24,28],[1192,10,16,23,36,39,40],[1191,1,4,11,12,20,41],[1190,7,9,19,23,26,45],[1189,9,19,29,35,37,38],[1188,3,4,12,19,22,27],[1187,5,13,26,29,37,40],[1186,2,8,13,16,23,28],[1185,6,17,22,28,29,32],[1184,14,16,23,25,31,37],[1183,4,15,17,23,27,36],[1182,1,13,21,25,28,31],[1181,8,10,14,20,33,41],[1180,6,12,18,37,40,41],[1179,3,16,18,24,40,44],[1178,5,6,11,27,43,44],[1177,3,7,15,16,19,43],[1176,7,9,11,21,30,35],[1175,3,4,6,8,32,42],[1174,8,11,14,17,36,39],[1173,1,5,18,20,30,35],[1172,7,9,24,40,42,44],[1171,3,6,7,11,12,17],[1170,3,13,28,34,38,42],[1169,5,12,24,26,39,42],[1168,9,21,24,30,33,37],[1167,8,23,31,35,39,40],[1166,14,23,25,27,29,42],[1165,6,7,27,29,38,45],[1164,17,18,23,25,38,39],[1163,2,13,15,16,33,43],[1162,20,21,22,25,28,29],[1161,2,12,20,24,34,42],[1160,7,13,18,36,39,45],[1159,3,9,27,28,38,39],[1158,21,25,27,32,37,38],[1157,5,7,12,20,25,26],[1156,30,31,34,39,41,45],[1155,10,16,19,27,37,38],[1154,4,8,22,26,32,38],[1153,1,9,10,13,35,44],[1152,30,31,32,35,36,37],[1151,2,3,9,15,27,29],[1150,8,9,18,35,39,45],[1149,8,15,19,21,32,36],[1148,3,6,13,15,16,22],[1147,7,11,24,26,27,37],[1146,6,11,17,19,40,43],[1145,2,11,31,33,37,44],[1144,3,4,12,15,26,34],[1143,10,16,17,27,28,36],[1142,2,8,28,30,37,41],[1141,7,11,12,21,26,35],[1140,7,10,22,29,31,38],[1139,5,12,15,30,37,40],[1138,14,16,19,20,29,34],[1137,4,9,12,15,33,45],[1136,21,33,35,38,42,44],[1135,1,6,13,19,21,33],[1134,3,7,9,13,19,24],[1133,13,14,20,28,29,34],[1132,6,7,19,28,34,41],[1131,1,2,6,14,27,38],[1130,15,19,21,25,27,28],[1129,5,10,11,17,28,34],[1128,1,5,8,16,28,33],[1127,10,15,24,30,31,37],[1126,4,5,9,11,37,40],[1125,6,14,25,33,40,44],[1124,3,8,17,30,33,34],[1123,13,19,21,24,34,35],[1122,3,6,21,30,34,35]];
 
-        /* [기능_정의: 대기_및_횟수_제어] */
-        function checkStatus() {
-            const last = localStorage.getItem('lastUse');
-            if (last) {
-                const diff = new Date().getTime() - parseInt(last);
-                if (diff < WAIT_TIME_MINUTES * 60000) {
-                    startTimer(WAIT_TIME_MINUTES * 60000 - diff);
-                    return;
+        function handleAdmin() {
+            if (pwFailCount >= 5) { alert("보안상의 이유로 시스템이 영구 잠금되었습니다."); return; }
+            const pw = prompt("심장부 열쇠를 입력하세요.");
+            if (pw === ADMIN_RESET) {
+                pwFailCount = 0; localStorage.setItem('pwFail', 0);
+                const memo = JSON.parse(localStorage.getItem('myMemo') || "{}");
+                if (memo.content) {
+                    const r = prompt(`쪽지: ${memo.content}\n답장 입력:`);
+                    if(r) { memo.reply = r; localStorage.setItem('myMemo', JSON.stringify(memo)); }
                 }
+                counts = {'5':1, '10':1}; fixedPool = {'5':null, '10':null};
+                localStorage.removeItem('lastUse');
+                location.reload();
+            } else if (pw === ADMIN_UNLOCK) {
+                pwFailCount = 0; localStorage.setItem('pwFail', 0);
+                alert("잠금이 해제되었습니다.");
+            } else {
+                pwFailCount++;
+                localStorage.setItem('pwFail', pwFailCount);
+                alert(`열쇠가 맞지 않습니다. (${pwFailCount}/5)`);
+                if (pwFailCount >= 5) location.reload();
             }
-            updateUI();
+        }
+
+        function checkLock() {
+            if (pwFailCount >= 5) {
+                document.getElementById('main-body').innerHTML = "<h1 style='margin-top:200px; color:red;'>SYSTEM LOCKED</h1><p>관리자에게 문의하십시오.</p>";
+            }
         }
 
         function updateUI() {
+            const last = localStorage.getItem('lastUse');
+            if (last) {
+                const diff = new Date().getTime() - parseInt(last);
+                if (diff < WAIT_TIME) {
+                    startTimer(WAIT_TIME - diff);
+                    return;
+                }
+            }
             document.getElementById('btn5').innerText = `5조합 생성 (남음:${counts['5']})`;
             document.getElementById('btn10').innerText = `10조합 생성 (남음:${counts['10']})`;
             document.getElementById('btn5').disabled = (counts['5'] <= 0);
             document.getElementById('btn10').disabled = (counts['10'] <= 0);
-            document.getElementById('status-text').innerText = (counts['5'] + counts['10'] === 0) ? "사용 횟수 모두 소진" : "분석 대기 완료";
+            document.getElementById('status-text').innerText = (counts['5']+counts['10'] === 0) ? "사용 횟수 모두 소진" : "분석 대기 완료";
         }
 
         function startTimer(ms) {
             document.getElementById('btn5').disabled = document.getElementById('btn10').disabled = true;
             const t = setInterval(() => {
                 ms -= 1000;
-                if (ms <= 0) { clearInterval(t); checkStatus(); }
+                if (ms <= 0) { clearInterval(t); updateUI(); }
                 else { document.getElementById('status-text').innerText = `${Math.ceil(ms/1000)}초 후 가능`; }
             }, 1000);
         }
 
-        /* [기능_정의: 번호_압축_고정] */
+        function process(mode) {
+            if (counts[mode] <= 0) return;
+            counts[mode]--;
+            localStorage.setItem('lastUse', new Date().getTime().toString());
+            
+            const pool = getPool(mode);
+            const box = document.getElementById('console');
+            box.innerHTML = `▶ [${entireData[0][0]+1}회차 ${mode}조합] 신의 선택\n` + "=".repeat(35) + "\n";
+            
+            extractionLog[mode]++;
+            for(let i=0; i<(mode==='5'?5:10); i++) {
+                const combo = getCombo(당구);
+                box.innerHTML += combo.join('  ') + "\n";
+                extractionLog.history.push({mode, combo, time: new Date().toLocaleString()});
+            }
+            localStorage.setItem('extractionLog', JSON.stringify(extractionLog));
+            startTimer(WAIT_TIME);
+        }
+
         function getPool(mode) {
             if (fixedPool[mode]) return fixedPool[mode];
             const all = entireData.flatMap(r => r.slice(1));
@@ -134,7 +145,6 @@
             return pool;
         }
 
-        /* [기능_정의: 세부_조합_추출] */
         function getCombo(p) {
             while (true) {
                 const c = [...p].sort(()=>0.5-Math.random()).slice(0,6).sort((a,b)=>a-b);
@@ -144,50 +154,31 @@
             }
         }
 
-        function process(mode) {
-            if (counts[mode] <= 0) return;
-            counts[mode]--;
-            localStorage.setItem('lastUse', new Date().getTime().toString());
-            const pool = getPool(mode);
-            const box = document.getElementById('console');
-            box.innerHTML = `▶ [${entireData[0][0]+1}회차 ${mode}조합] 추출 완료\n` + "=".repeat(35) + "\n";
-            for(let i=0; i<(mode==='5'?5:10); i++) box.innerHTML += getCombo(당구).join('  ') + "\n";
-            startTimer(WAIT_TIME_MINUTES * 60000);
+        function showStats() {
+            alert(`[추출 통계]\n5조합 생성 횟수: ${extractionLog['5']}회\n10조합 생성 횟수: ${extractionLog['10']}회\n데이터 대조 준비 완료.`);
         }
 
-        /* [기능_정의: 쪽지_시스템] */
         function openMemo() {
             document.getElementById('memo-modal').style.display = 'block';
-            const saved = JSON.parse(localStorage.getItem('myMemo') || "{}");
-            if (saved.reply) {
-                document.getElementById('reply-section').style.display = 'block';
-                document.getElementById('reply-text').innerText = saved.reply;
+            const memo = JSON.parse(localStorage.getItem('myMemo') || "{}");
+            if(memo.reply) {
+                const rb = document.getElementById('reply-box');
+                rb.innerHTML = `<strong>관리자 답장:</strong><br>${memo.reply}`;
+                rb.style.display = 'block';
             }
         }
         function closeMemo() { document.getElementById('memo-modal').style.display = 'none'; }
         function sendMemo() {
             const addr = document.getElementById('memo-addr').value;
             const content = document.getElementById('memo-content').value;
-            if(!addr || !content) return alert("주소와 내용을 모두 적어주세요.");
+            if(!addr || !content) return alert("빈칸을 채워주세요.");
             localStorage.setItem('myMemo', JSON.stringify({addr, content, reply: ""}));
-            alert("사장님의 소중한 쪽지가 전달되었습니다.");
+            alert("쪽지가 봉인되어 전달되었습니다.");
             closeMemo();
         }
 
-        /* [관리자_기능] */
-        function adminReset() {
-            if (prompt("ADMIN PW") === ADMIN_PW) {
-                localStorage.removeItem('lastUse');
-                counts = {'5':1, '10':1}; fixedPool = {'5':null, '10':null};
-                const memo = JSON.parse(localStorage.getItem('myMemo') || "{}");
-                if (memo.content) {
-                    const r = prompt(`쪽지내용: ${memo.content}\n주소: ${memo.addr}\n\n답장을 입력하세요:`);
-                    if(r) { memo.reply = r; localStorage.setItem('myMemo', JSON.stringify(memo)); }
-                }
-                location.reload();
-            }
-        }
-        checkStatus();
+        checkLock();
+        updateUI();
     </script>
 </body>
 </html>
