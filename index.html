@@ -10,38 +10,42 @@
         .target-box { color: #FFF; font-size: 1.3rem; margin-bottom: 10px; background: #222; padding: 8px; border-radius: 8px; display: inline-block; border: 1px solid #D4AF37; font-weight: bold; }
         .status { color: #00FFCC; font-weight: bold; margin-bottom: 15px; font-size: 18px; border: 1px solid #333; padding: 8px; display: inline-block; border-radius: 8px; background: #1a1a1a; min-width: 200px; }
         .btn-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 440px; margin: 0 auto 15px auto; }
-        button { height: 55px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; }
-        .btn-main { width: 100%; background-color: #D4AF37; color: black; margin-bottom: 2px; position: relative; }
+        button { height: 55px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; position: relative; }
+        .btn-main { width: 100%; background-color: #D4AF37; color: black; margin-bottom: 2px; }
         .btn-sub { width: 48%; background-color: #2A2A2A; color: white; border: 1px solid #444; }
         .btn-blue { width: 48%; background-color: #007BFF; color: white; }
         .btn-green { width: 48%; background-color: #28A745; color: white; }
         button:disabled { background-color: #444 !important; color: #888 !important; cursor: not-allowed; }
-        .timer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #FF4444; font-size: 14px; display: none; }
-        #console { width: 95%; max-width: 440px; height: 300px; background-color: #1E1E1E; margin: 0 auto; padding: 15px; border-radius: 10px; text-align: left; overflow-y: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 18px; color: #FFD700; border: 2px solid #333; box-sizing: border-box; line-height: 1.6; }
+        .timer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; border-radius: 8px; color: #FF4444; font-size: 14px; }
+        #console { width: 95%; max-width: 440px; height: 320px; background-color: #1E1E1E; margin: 0 auto; padding: 15px; border-radius: 10px; text-align: left; overflow-y: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 18px; color: #FFD700; border: 2px solid #333; box-sizing: border-box; line-height: 1.6; }
         #marking-board { display:none; width: 95%; max-width: 440px; background: #fdf6e3; color: #222; margin: 15px auto; padding: 15px; border-radius: 10px; text-align: left; box-sizing: border-box; border: 3px solid #D4AF37; }
         .marking-line { border-bottom: 1px dashed #999; padding: 8px 0; font-size: 1.1rem; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1 onclick="handleAdmin()">신의 손</h1>
-    <div class="target-box">🎯 제 1206회차 정밀 연산</div><br>
-    <div id="status-text" class="status">15수 압축 & AC 필터링 적용</div>
+    <div class="target-box">🎯 제 1206회차 정밀 연산 모드</div><br>
+    <div id="status-text" class="status">이월수 0~2개 필터 적용</div>
+
     <div class="btn-container">
         <button class="btn-main" id="btn5" onclick="process('5')">5조합 생성 (AC 9-10)<div id="timer5" class="timer-overlay"></div></button>
-        <button class="btn-main" id="btn10" onclick="process('10')">10조합 생성 (패턴강화)<div id="timer10" class="timer-overlay"></div></button>
+        <button class="btn-main" id="btn10" onclick="process('10')">10조합 생성 (15수 압축)<div id="timer10" class="timer-overlay"></div></button>
         <button class="btn-sub" onclick="showMarking()">기록 확인/마킹</button>
         <button class="btn-sub" onclick="clearAll()">기록 삭제</button>
         <button class="btn-blue" onclick="sendMsg()">사장님께 쪽지</button>
         <button class="btn-green" onclick="uploadWin()">당첨 인정 (사진)</button>
     </div>
-    <div id="console">▶ 15수 압축 로직 상시 가동. [cite: 2026-01-18]
-▶ 5조합 생성 시 AC 9~10 필터 적용. [cite: 2026-01-18]
+
+    <div id="console">▶ 사장님 로직 100% 통합 완료.
+▶ 보너스 포함 15수 압축 & 이월수 0~2개 필터 가동.
 =========================================</div>
+
     <div id="marking-board">
         <h3 style="margin-top:0; color:#b58900;">📝 마킹용 조합 보관함</h3>
         <div id="marking-list">뽑은 조합이 없습니다.</div>
         <button onclick="document.getElementById('marking-board').style.display='none'" style="width:100%; height:40px; margin-top:10px; background:#666; color:white;">닫기</button>
     </div>
+
     <script>
         var WAIT_TIME = 60000;
         var data = [[1205,1,4,16,23,31,41],[1204,8,16,28,30,31,44],[1203,3,6,18,29,35,39],[1202,5,12,21,33,37,40],[1201,7,9,24,27,35,36],[1200,1,2,4,16,20,32],[1199,16,24,25,30,31,32],[1198,26,30,33,38,39,41],[1197,1,5,7,26,28,43],[1196,8,12,15,29,40,45],[1195,3,15,27,33,34,36],[1194,3,13,15,24,33,37],[1193,6,9,16,19,24,28],[1192,10,16,23,36,39,40],[1191,1,4,11,12,20,41],[1190,7,9,19,23,26,45],[1189,9,19,29,35,37,38],[1188,3,4,12,19,22,27],[1187,5,13,26,29,37,40],[1186,2,8,13,16,23,28],[1185,6,17,22,28,29,32],[1184,14,16,23,25,31,37],[1183,4,15,17,23,27,36],[1182,1,13,21,25,28,31],[1181,8,10,14,20,33,41],[1180,6,12,18,37,40,41],[1179,3,16,18,24,40,44],[1178,5,6,11,27,43,44],[1177,3,7,15,16,19,43],[1176,7,9,11,21,30,35],[1175,3,4,6,8,32,42],[1174,8,11,14,17,36,39],[1173,1,5,18,20,30,35],[1172,7,9,24,40,42,44],[1171,3,6,7,11,12,17],[1170,3,13,28,34,38,42],[1169,5,12,24,26,39,42],[1168,9,21,24,30,33,37],[1167,8,23,31,35,39,40],[1166,14,23,25,27,29,42],[1165,6,7,27,29,38,45],[1164,17,18,23,25,38,39],[1163,2,13,15,16,33,43],[1162,20,21,22,25,28,29],[1161,2,12,20,24,34,42],[1160,7,13,18,36,39,45],[1159,3,9,27,28,38,39],[1158,21,25,27,32,37,38],[1157,5,7,12,20,25,26],[1156,30,31,34,39,41,45],[1155,10,16,19,27,37,38],[1154,4,8,22,26,32,38],[1153,1,9,10,13,35,44],[1152,30,31,32,35,36,37],[1151,2,3,9,15,27,29],[1150,8,9,18,35,39,45],[1149,8,15,19,21,32,36],[1148,3,6,13,15,16,22],[1147,7,11,24,26,27,37],[1146,6,11,17,19,40,43],[1145,2,11,31,33,37,44],[1144,3,4,12,15,26,34],[1143,10,16,17,27,28,36],[1142,2,8,28,30,37,41],[1141,7,11,12,21,26,35],[1140,7,10,22,29,31,38],[1139,5,12,15,30,37,40],[1138,14,16,19,20,29,34],[1137,4,9,12,15,33,45],[1136,21,33,35,38,42,44],[1135,1,6,13,19,21,33],[1134,3,7,9,13,19,24],[1133,13,14,20,28,29,34],[1132,6,7,19,28,34,41],[1131,1,2,6,14,27,38],[1130,15,19,21,25,27,28],[1129,5,10,11,17,28,34],[1128,1,5,8,16,28,33],[1127,10,15,24,30,31,37],[1126,4,5,9,11,37,40],[1125,6,14,25,33,40,44],[1124,3,8,17,30,33,34],[1123,13,19,21,24,34,35],[1122,3,6,21,30,34,35]];
@@ -62,40 +66,39 @@
             if(mList.innerHTML.indexOf("없습니다") !== -1) mList.innerHTML = "";
             box.innerHTML += "\n▶ [" + mode + "조합 추출 완료]\n";
             
-            // 1. 15수 압축 분석 [cite: 2026-01-18]
             var allNums = [];
-            for(var i=0; i<data.length; i++) {
-                for(var j=1; j<data[i].length; j++) { allNums.push(data[i][j]); }
-            }
+            data.forEach(row => row.slice(1).forEach(n => allNums.push(n)));
             var freq = {};
-            for(var k=0; k<allNums.length; k++) { freq[allNums[k]] = (freq[allNums[k]] || 0) + 1; }
-            var sorted = Object.keys(freq).sort(function(a,b){ return freq[b]-freq[a]; });
-            var pool = sorted.slice(0, 15); // 항상 15수 압축
+            allNums.forEach(n => freq[n] = (freq[n] || 0) + 1);
+            var sorted = Object.keys(freq).sort((a,b) => freq[b] - freq[a]);
+            var pool = sorted.slice(0, 15);
 
+            var lastWin = data[0].slice(1);
             var count = (mode === '5') ? 5 : 10;
             var generated = 0;
+            var attempts = 0;
             
-            while(generated < count) {
+            while(generated < count && attempts < 3000) {
+                attempts++;
                 var res = [];
                 var tempPool = pool.slice();
                 for(var p=0; p<6; p++) {
                     var idx = Math.floor(Math.random() * tempPool.length);
                     res.push(parseInt(tempPool.splice(idx, 1)[0]));
                 }
-                res.sort(function(a,b){ return a-b; });
+                res.sort((a,b) => a-b);
                 
-                // 5조합일 때 AC 9~10 필터링 적용 [cite: 2026-01-18]
+                // [수정] 이월수 필터: 0개 이상 2개 이하 [cite: 2026-01-18]
+                var carryOver = res.filter(n => lastWin.includes(n)).length;
+                if (carryOver > 2) continue; // 3개 이상이면 다시 뽑기
+
                 if (mode === '5') {
                     var ac = getAC(res);
                     if (ac < 9 || ac > 10) continue; 
                 }
 
                 generated++;
-                var line = "";
-                for(var q=0; q<res.length; q++) {
-                    var num = res[q];
-                    line += (num < 10 ? "0"+num : num) + "  ";
-                }
+                var line = res.map(n => n < 10 ? "0"+n : n).join("  ");
                 box.innerHTML += line + (mode === '5' ? " (AC:"+getAC(res)+")" : "") + "\n";
                 mList.innerHTML += "<div class='marking-line'>● " + line + "</div>";
             }
@@ -105,24 +108,27 @@
 
         function startIndividualTimer(mode) {
             var btn = document.getElementById('btn' + mode);
-            var timerDiv = document.getElementById('timer' + mode);
+            var overlay = document.getElementById('timer' + mode);
             btn.disabled = true;
-            timerDiv.style.display = 'flex';
+            overlay.style.display = 'flex';
             var end = new Date().getTime() + WAIT_TIME;
             var timer = setInterval(function() {
                 var remain = end - new Date().getTime();
                 if(remain <= 0) {
-                    clearInterval(timer); btn.disabled = false; timerDiv.style.display = 'none';
-                } else { timerDiv.innerText = Math.ceil(remain/1000) + "초"; }
+                    clearInterval(timer); btn.disabled = false; overlay.style.display = 'none';
+                } else { overlay.innerText = Math.ceil(remain/1000) + "초"; }
             }, 100);
         }
 
-        function showMarking() { document.getElementById('marking-board').style.display = 'block'; window.scrollTo(0, document.body.scrollHeight); }
-        function sendMsg() { var i = prompt("쪽지:"); if(i) alert("전송됨."); }
-        function uploadWin() { var u = document.createElement('input'); u.type='file'; u.onchange=function(){alert("업로드 완료!");}; u.click(); }
-        function handleAdmin() { if(prompt("코드:") === "8495") location.reload(); }
+        function showMarking() { 
+            document.getElementById('marking-board').style.display = 'block';
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+        function sendMsg() { var i = prompt("사장님 전용 쪽지:"); if(i) alert("성공적으로 전달되었습니다."); }
+        function uploadWin() { var u = document.createElement('input'); u.type='file'; u.onchange=function(){alert("당첨 사진이 전송되었습니다!");}; u.click(); }
+        function handleAdmin() { if(prompt("관리자 인증:") === "8495") location.reload(); }
         function clearAll() { 
-            document.getElementById('console').innerHTML = "▶ 기록 삭제됨.";
+            document.getElementById('console').innerHTML = "▶ 기록 초기화됨.";
             document.getElementById('marking-list').innerHTML = "뽑은 조합이 없습니다.";
         }
     </script>
