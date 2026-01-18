@@ -104,9 +104,9 @@
         }
 
         function sendMessage() {
-            var msg = prompt("사장님께 보낼 메시지를 입력하세요.");
+            var msg = prompt("개발자님께 보낼 메시지를 입력하세요.");
             if(msg) {
-                alert("사장님께 쪽지가 전달되었습니다.\n(내용: " + msg + ")");
+                alert("개발자님께 쪽지가 전달되었습니다.\n(내용: " + msg + ")");
                 // 실제 연동 시 서버 API 호출 영역
             }
         }
@@ -116,7 +116,7 @@
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
             fileInput.onchange = function() {
-                alert("당첨 사진이 성공적으로 업로드되었습니다. 사장님 확인 후 승인됩니다!");
+                alert("당첨 사진이 성공적으로 업로드되었습니다. 개발자님 확인 후 승인됩니다!");
             };
             fileInput.click();
         }
