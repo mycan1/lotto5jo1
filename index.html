@@ -7,14 +7,14 @@
     <style>
         body { background-color: #121212; color: #FFD700; font-family: 'Malgun Gothic', sans-serif; text-align: center; padding: 20px; margin: 0; }
         h1 { color: #D4AF37; font-size: 3rem; margin-top: 20px; font-weight: 900; cursor: pointer; text-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
-        /* 상태창: 카운트다운이 여기서 확실히 보여야 함 */
         .status { color: #00FFCC; font-weight: bold; margin-bottom: 20px; font-size: 22px; border: 2px solid #333; padding: 12px; display: inline-block; border-radius: 10px; background: #1a1a1a; min-width: 280px; }
         .btn-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 440px; margin: 0 auto 15px auto; }
         button { width: 48%; height: 65px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
         .btn-gold { background-color: #D4AF37; color: black; width: 100%; margin-bottom: 5px; }
         .btn-dark { background-color: #2A2A2A; color: white; border: 1px solid #444; }
         button:disabled { background-color: #444 !important; color: #888 !important; cursor: not-allowed; }
-        #console { width: 95%; max-width: 440px; height: 320px; background-color: #1E1E1E; margin: 0 auto; padding: 15px; border-radius: 10px; text-align: left; overflow-y: auto; white-space: pre-wrap; font-family: 'Consolas', monospace; font-size: 17px; color: #FFD700; border: 2px solid #333; box-sizing: border-box; }
+        /* 숫자 가독성 향상 */
+        #console { width: 95%; max-width: 440px; height: 350px; background-color: #1E1E1E; margin: 0 auto; padding: 15px; border-radius: 10px; text-align: left; overflow-y: auto; white-space: pre-wrap; font-family: 'Consolas', 'Courier New', monospace; font-size: 18px; color: #FFD700; border: 2px solid #333; box-sizing: border-box; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -33,13 +33,16 @@
 =========================================</div>
 
     <script>
-        const WAIT_TIME = 60000; // 60초 대기
+        const WAIT_TIME = 60000; 
+        const ADMIN_RESET = "8495";
+        
+        // 데이터 원본 (중첩 배열 구조 재확인)
         const entireData = [[1205,1,4,16,23,31,41],[1204,8,16,28,30,31,44],[1203,3,6,18,29,35,39],[1202,5,12,21,33,37,40],[1201,7,9,24,27,35,36],[1200,1,2,4,16,20,32],[1199,16,24,25,30,31,32],[1198,26,30,33,38,39,41],[1197,1,5,7,26,28,43],[1196,8,12,15,29,40,45],[1195,3,15,27,33,34,36],[1194,3,13,15,24,33,37],[1193,6,9,16,19,24,28],[1192,10,16,23,36,39,40],[1191,1,4,11,12,20,41],[1190,7,9,19,23,26,45],[1189,9,19,29,35,37,38],[1188,3,4,12,19,22,27],[1187,5,13,26,29,37,40],[1186,2,8,13,16,23,28],[1185,6,17,22,28,29,32],[1184,14,16,23,25,31,37],[1183,4,15,17,23,27,36],[1182,1,13,21,25,28,31],[1181,8,10,14,20,33,41],[1180,6,12,18,37,40,41],[1179,3,16,18,24,40,44],[1178,5,6,11,27,43,44],[1177,3,7,15,16,19,43],[1176,7,9,11,21,30,35],[1175,3,4,6,8,32,42],[1174,8,11,14,17,36,39],[1173,1,5,18,20,30,35],[1172,7,9,24,40,42,44],[1171,3,6,7,11,12,17],[1170,3,13,28,34,38,42],[1169,5,12,24,26,39,42],[1168,9,21,24,30,33,37],[1167,8,23,31,35,39,40],[1166,14,23,25,27,29,42],[1165,6,7,27,29,38,45],[1164,17,18,23,25,38,39],[1163,2,13,15,16,33,43],[1162,20,21,22,25,28,29],[1161,2,12,20,24,34,42],[1160,7,13,18,36,39,45],[1159,3,9,27,28,38,39],[1158,21,25,27,32,37,38],[1157,5,7,12,20,25,26],[1156,30,31,34,39,41,45],[1155,10,16,19,27,37,38],[1154,4,8,22,26,32,38],[1153,1,9,10,13,35,44],[1152,30,31,32,35,36,37],[1151,2,3,9,15,27,29],[1150,8,9,18,35,39,45],[1149,8,15,19,21,32,36],[1148,3,6,13,15,16,22],[1147,7,11,24,26,27,37],[1146,6,11,17,19,40,43],[1145,2,11,31,33,37,44],[1144,3,4,12,15,26,34],[1143,10,16,17,27,28,36],[1142,2,8,28,30,37,41],[1141,7,11,12,21,26,35],[1140,7,10,22,29,31,38],[1139,5,12,15,30,37,40],[1138,14,16,19,20,29,34],[1137,4,9,12,15,33,45],[1136,21,33,35,38,42,44],[1135,1,6,13,19,21,33],[1134,3,7,9,13,19,24],[1133,13,14,20,28,29,34],[1132,6,7,19,28,34,41],[1131,1,2,6,14,27,38],[1130,15,19,21,25,27,28],[1129,5,10,11,17,28,34],[1128,1,5,8,16,28,33],[1127,10,15,24,30,31,37],[1126,4,5,9,11,37,40],[1125,6,14,25,33,40,44],[1124,3,8,17,30,33,34],[1123,13,19,21,24,34,35],[1122,3,6,21,30,34,35]];
 
         function handleAdmin() {
-            const pw = prompt("관리자 코드 입력");
-            if(pw === "8495") {
-                localStorage.removeItem('lastUse');
+            const pw = prompt("관리자 코드");
+            if(pw === ADMIN_RESET) {
+                localStorage.clear();
                 location.reload();
             }
         }
@@ -47,51 +50,59 @@
         function process(mode) {
             const box = document.getElementById('console');
             
-            // 번호 추출 로직
-            const pool = getPool(mode);
+            // 번호 추출 시작 메시지
             box.innerHTML += `\n▶ [${mode}조합 추출 완료]\n`;
             
-            const count = mode === '5' ? 5 : 10;
-            for(let i=0; i<count; i++) {
-                const combo = getCombo(당구);
-                box.innerHTML += combo.join('  ') + "\n";
+            try {
+                const pool = getPool(mode);
+                const count = mode === '5' ? 5 : 10;
+                
+                for(let i=0; i<count; i++) {
+                    const combo = getCombo(당구);
+                    // 숫자를 한 줄씩 확실하게 추가
+                    box.innerHTML += combo.join('  ') + "\n";
+                }
+                box.innerHTML += "-----------------------------------------\n";
+            } catch (e) {
+                box.innerHTML += "!! 데이터 연산 오류 발생 !!\n";
             }
-            box.innerHTML += "-----------------------------------------\n";
+            
             box.scrollTop = box.scrollHeight;
 
-            // 시간 기록 및 타이머 작동
             localStorage.setItem('lastUse', new Date().getTime());
             startTimer(WAIT_TIME);
         }
 
         function startTimer(ms) {
-            const btn5 = document.getElementById('btn5');
-            const btn10 = document.getElementById('btn10');
-            const status = document.getElementById('status-text');
+            const b5 = document.getElementById('btn5');
+            const b10 = document.getElementById('btn10');
+            const st = document.getElementById('status-text');
 
-            btn5.disabled = true;
-            btn10.disabled = true;
-            status.style.color = "#FF4444"; // 대기 중에는 빨간색으로 변경하여 강조
+            b5.disabled = true; b10.disabled = true;
+            st.style.color = "#FF4444";
 
             const timer = setInterval(() => {
                 ms -= 1000;
                 if (ms <= 0) {
                     clearInterval(timer);
-                    btn5.disabled = false;
-                    btn10.disabled = false;
-                    status.innerText = "분석 대기 완료";
-                    status.style.color = "#00FFCC";
+                    b5.disabled = false; b10.disabled = false;
+                    st.innerText = "분석 대기 완료";
+                    st.style.color = "#00FFCC";
                 } else {
-                    // 이 부분이 화면에 "60초 후 가능"이라고 실시간으로 뿌려주는 곳입니다.
-                    status.innerText = Math.ceil(ms/1000) + "초 후 가능";
+                    st.innerText = Math.ceil(ms/1000) + "초 후 가능";
                 }
             }, 1000);
         }
 
         function getPool(mode) {
-            const allNumbers = entireData.flatMap(r => r.slice(1));
+            // 사장님 데이터에서 번호만 쫙 뽑기
+            const all = [];
+            entireData.forEach(row => {
+                for(let i=1; i<row.length; i++) all.push(row[i]);
+            });
+            
             const freq = {};
-            allNumbers.forEach(n => freq[n] = (freq[n] || 0) + 1);
+            all.forEach(n => freq[n] = (freq[n] || 0) + 1);
             const sorted = Object.keys(freq).sort((a,b) => freq[b] - freq[a]).map(Number);
             return sorted.slice(0, mode === '5' ? 15 : 25);
         }
@@ -99,14 +110,13 @@
         function getCombo(p) {
             const res = [];
             const temp = [...p];
-            while(res.length < 6) {
+            for(let i=0; i<6; i++) {
                 const idx = Math.floor(Math.random() * temp.length);
                 res.push(temp.splice(idx, 1)[0]);
             }
             return res.sort((a,b) => a-b).map(n => n.toString().padStart(2,'0'));
         }
 
-        // 페이지 로드 시 남은 시간 확인
         window.onload = function() {
             const last = localStorage.getItem('lastUse');
             if(last) {
