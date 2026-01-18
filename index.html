@@ -3,30 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>신의 손 - LUXURY EDITION</title>
+    <title>신의 손 - LUXURY STRATEGY</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         body { background-color: #000; color: #d4a017; font-family: 'Malgun Gothic', sans-serif; text-align: center; padding: 20px; margin: 0; }
-        h1 { color: #d4a017; font-size: 2.8rem; margin-top: 20px; font-weight: 900; text-shadow: 2px 2px 10px rgba(212, 160, 23, 0.5); letter-spacing: -2px; }
-        
-        .target-box { color: #fff; font-size: 1.1rem; margin-bottom: 25px; background: linear-gradient(145deg, #1a1a1a, #000); padding: 12px 25px; border-radius: 50px; display: inline-block; border: 1px solid #d4a017; box-shadow: 0 0 15px rgba(212, 160, 23, 0.2); }
-        
+        h1 { color: #d4a017; font-size: 2.8rem; margin-top: 20px; font-weight: 900; text-shadow: 2px 2px 10px rgba(212, 160, 23, 0.5); letter-spacing: -2px; cursor: pointer; }
+        .target-box { color: #fff; font-size: 1.1rem; margin-bottom: 25px; background: linear-gradient(145deg, #1a1a1a, #000); padding: 12px 25px; border-radius: 50px; display: inline-block; border: 1px solid #d4a017; }
         .btn-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 420px; margin: 0 auto 20px auto; }
         button { border: none; border-radius: 12px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
-        
-        .btn-main { width: 100%; height: 65px; background: linear-gradient(180deg, #f2c94c, #d4a017); color: #000; font-size: 20px; margin-bottom: 5px; box-shadow: 0 5px 15px rgba(212, 160, 23, 0.3); }
-        .btn-main:active { transform: scale(0.98); box-shadow: none; }
-        
+        .btn-main { width: 100%; height: 65px; background: linear-gradient(180deg, #f2c94c, #d4a017); color: #000; font-size: 20px; margin-bottom: 5px; }
         .btn-sub { width: 48%; height: 55px; background-color: #1a1a1a; color: #fff; border: 1px solid #333; font-size: 16px; }
         .btn-menu { width: 100%; height: 50px; background-color: #000; color: #d4a017; border: 2px dashed #d4a017; margin-top: 15px; font-size: 16px; }
-
         #console { width: 100%; height: 280px; padding: 20px; background: #0a0a0a; color: #f2c94c; border: 2px solid #1a1a1a; border-radius: 20px; margin: 20px auto; text-align: left; overflow-y: auto; white-space: pre-wrap; box-sizing: border-box; font-size: 22px; font-weight: bold; line-height: 1.8; border-top: 4px solid #d4a017; }
-        
         #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; padding-top: 60px; }
-        .modal-content { background: #111; width: 85%; max-width: 380px; margin: 0 auto; padding: 30px; border: 1px solid #d4a017; border-radius: 25px; box-shadow: 0 0 30px rgba(212, 160, 23, 0.2); }
-        
-        .admin-input { width: 100%; height: 55px; margin: 20px 0; background: #000; color: #fff; border: 1px solid #d4a017; text-align: center; font-size: 26px; border-radius: 10px; }
+        .modal-content { background: #111; width: 85%; max-width: 380px; margin: 0 auto; padding: 30px; border: 1px solid #d4a017; border-radius: 25px; }
+        .admin-input { width: 100%; height: 55px; margin: 20px 0; background: #000; color: #fff; border: 1px solid #d4a017; text-align: center; font-size: 26px; border-radius: 10px; letter-spacing: 5px; }
         textarea { width: 100%; height: 120px; background: #000; color: #00ff00; border: 1px solid #333; padding: 15px; box-sizing: border-box; font-size: 18px; border-radius: 10px; margin-bottom: 15px; }
     </style>
 </head>
@@ -42,7 +34,7 @@
         <button class="btn-menu" onclick="showModal('menu')">🎙️ 관리자 전략 사령부</button>
     </div>
 
-    <div id="console">▶ 사장님, 준비 완료되었습니다.</div>
+    <div id="console">▶ 사장님, 시스템 준비 완료.</div>
     <div id="modal"><div class="modal-content" id="modal-inner"></div></div>
 
     <script>
@@ -51,14 +43,13 @@
         const db = firebase.database();
         
         let cmd18Numbers = [1,4,9,11,16,18,23,25,27,31,33,35,38,40,41,42,44,45]; 
-        let currentRound = "1206회";
-        let lastWinNums = [1, 4, 16, 23, 31, 41]; // 지난주 번호 (이월수 체크용)
+        let lastWinNums = [1, 4, 16, 23, 31, 41]; 
 
         db.ref('hq_strategy').on('value', (snap) => {
             const data = snap.val();
             if(data && data.nums) {
                 cmd18Numbers = data.nums;
-                document.getElementById('current-strategy').innerText = `🎯 ${currentRound} [${cmd18Numbers.length}수] 전략 가동`;
+                document.getElementById('current-strategy').innerText = `🎯 1206회 [${cmd18Numbers.length}수] 전략 가동`;
             }
         });
 
@@ -70,7 +61,7 @@
 
         function process(mode) {
             var box = document.getElementById('console');
-            box.innerHTML = `▶ 생성 중...\n\n`;
+            box.innerHTML = `▶ [${mode}조합] 생성 중...\n\n`;
             var gen = 0, safety = 0;
             while(gen < (mode=='5'?5:10) && safety < 10000) {
                 safety++;
@@ -80,13 +71,9 @@
                     if(!res.includes(n)) res.push(n);
                 }
                 res.sort((a,b)=>a-b);
-                
-                // 1. AC 지수 필터 [cite: 2026-01-11]
                 if(mode=='5' && (getAC(res) < 9 || getAC(res) > 10)) continue;
-                // 2. 이월수 필터 (0~2개) [cite: 2026-01-18]
                 let carryCount = res.filter(x => lastWinNums.includes(x)).length;
                 if(carryCount > 2) continue;
-
                 gen++;
                 box.innerHTML += `(${gen})  ${res.map(n=>n<10?'0'+n:n).join('   ')}\n`;
             }
@@ -94,20 +81,42 @@
         }
 
         function showModal(type) {
+            var modal = document.getElementById('modal');
             var inner = document.getElementById('modal-inner');
             if(type == 'menu') {
-                inner.innerHTML = `<h2 style="color:#d4a017">🔐 사령부 접속</h2><input type="password" id="admin-pw" class="admin-input" placeholder="PASS"><button onclick="checkAdmin()" style="width:100%; height:55px; background:#d4a017; color:#000; border:none; font-weight:bold; border-radius:10px;">본부 입장</button>`;
+                inner.innerHTML = `
+                    <h2 style="color:#d4a017">🔐 사령부 인증</h2>
+                    <input type="tel" id="admin-pw" class="admin-input" placeholder="비밀번호">
+                    <button onclick="checkAdmin()" style="width:100%; height:55px; background:#d4a017; color:#000; border:none; font-weight:bold; border-radius:10px;">본부 입장</button>
+                `;
             } else if(type == 'admin_panel') {
-                inner.innerHTML = `<h2 style="color:#d4a017">🕹️ 전략 배포</h2><textarea id="new-18">${cmd18Numbers.join(',')}</textarea><button onclick="sendStrategy()" style="width:100%; height:60px; background:#00ff00; color:#000; font-weight:bold; border:none; border-radius:10px;">🚀 즉시 전송 및 배포</button>`;
+                inner.innerHTML = `
+                    <h2 style="color:#d4a017">🕹️ 전략 배포</h2>
+                    <textarea id="new-18">${cmd18Numbers.join(',')}</textarea>
+                    <button onclick="sendStrategy()" style="width:100%; height:60px; background:#00ff00; color:#000; font-weight:bold; border:none; border-radius:10px;">🚀 즉시 배포</button>
+                `;
             }
             inner.innerHTML += '<button class="btn-sub" style="width:100%; margin-top:20px;" onclick="hideModal()">닫기</button>';
-            document.getElementById('modal').style.display = 'block';
+            modal.style.display = 'block';
         }
 
-        function checkAdmin() { if(document.getElementById('admin-pw').value === "1234") showModal('admin_panel'); else alert("접근 금지"); }
+        function checkAdmin() {
+            var inputPw = document.getElementById('admin-pw').value;
+            // 가장 확실한 문자열 비교 방식 [cite: 2026-01-18]
+            if(inputPw == "1234") { 
+                showModal('admin_panel');
+            } else {
+                alert("비밀번호가 틀렸습니다.");
+            }
+        }
+
         function sendStrategy() {
-            const nums = document.getElementById('new-18').value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
-            db.ref('hq_strategy').set({ nums: nums, round: "1206회" }).then(() => { alert("전략이 배포되었습니다!"); hideModal(); });
+            const val = document.getElementById('new-18').value;
+            const nums = val.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+            db.ref('hq_strategy').set({ nums: nums, round: "1206회", time: Date.now() }).then(() => {
+                alert("전략이 배포되었습니다!");
+                hideModal();
+            });
         }
         function hideModal() { document.getElementById('modal').style.display = 'none'; }
         function clearAll() { if(confirm("초기화하시겠습니까?")) location.reload(); }
