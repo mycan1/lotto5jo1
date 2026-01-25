@@ -1,37 +1,8 @@
-const fs = require('fs');
-
-try {
-    // 1. 데이터 파일 읽기 (파일명이 lot.txt인지 꼭 확인!)
-    const data = fs.readFileSync('lot.txt', 'utf-8');
-    
-    // 2. 데이터 줄바꿈으로 나누기
-    const lines = data.trim().split('\n');
-    
-    // 3. 7-가죽나무 로직: 보너스 포함 7개 번호 추출
-    const pastData = lines.map(line => {
-        const parts = line.split(/\s+/); // 공백이나 탭으로 분리
-        // 숫자만 골라내기 (보통 뒤쪽 7개 숫자가 당첨번호)
-        return parts.filter(p => !isNaN(p) && p !== '').map(Number).slice(-7);
-    }).filter(row => row.length === 7);
-
-    if (pastData.length === 0) {
-        console.log("데이터를 읽지 못했습니다. lot.txt에 숫자가 있는지 확인하세요.");
-    } else {
-        console.log("=== [배추] v2.8 통합 로직 분석 완료 ===");
-        console.log(`분석 회차 수: ${pastData.length}회분`);
-        console.log("---------------------------------------");
-
-        // 임시 분석 번호 출력 (두 나물 오직 엔진 가동)
-        for (let i = 1; i <= 5; i++) {
-            let lucky = [];
-            while(lucky.length < 6) {
-                let num = Math.floor(Math.random() * 45) + 1;
-                if(!lucky.includes(num)) lucky.push(num);
-            }
-            console.log(`배추 추천 ${i}조합: ${lucky.sort((a,b) => a-b).join(', ')}`);
-        }
-        console.log("---------------------------------------");
-    }
-} catch (err) {
-    console.log("에러 발생: lot.txt 파일이 없거나 형식이 틀립니다.");
-}
+<!DOCTYPE html>
+<html>
+<head><title>배추 로직 결과</title></head>
+<body>
+    <h1>배추 v2.8 분석 시스템</h1>
+    <p>결과는 콘솔창 또는 데이터 분석을 통해 확인하세요.</p>
+</body>
+</html>
