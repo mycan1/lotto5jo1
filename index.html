@@ -1,70 +1,82 @@
-import pandas as pd
-import numpy as np
-from collections import Counter
+/**
+ * [배추] 로직 v2.8 - JavaScript/Node.js 최종 이식 버전
+ * 디자인: 두 나물 오직 (Logic A + 01) & 7-가죽나무 통합
+ */
 
-class TwoNamulLogic:
-    """
-    [두 나물 오직] 시스템 - 배추 & 7-가죽나무 통합 분석 엔진
-    원칙: 고정관념 폐기, 보너스 번호 동등 지위, 백테스터 기반 최적 확률 선택
-    """
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self.raw_data = self._load_and_clean_data()
+const fs = require('fs');
 
-    def _load_and_clean_data(self):
-        # 데이터 로드 및 7개 번호(보너스 포함) 추출 - '7-가죽나무' 원칙
-        try:
-            # 텍스트 파일의 탭 구분을 기반으로 데이터 로드
-            df = pd.read_csv(self.file_path, sep='\t', header=None)
-            # n1~n6 당첨번호와 마지막 보너스 번호까지 총 7개 컬럼 선택
-            # 데이터 구조에 따라 슬라이싱 (회차, '회' 문자열 제외)
-            data_7 = df.iloc[:, 2:9] 
-            return data_7
-        except Exception as e:
-            print(f"데이터 로드 에러: {e}")
-            return None
+class BaechuLogicV2_8 {
+    constructor(filePath) {
+        this.filePath = filePath;
+    }
 
-    def baechu_backtester(self):
-        """배추 로직: 전체 이력과 최근 신선도(Freshness)를 결합한 백테스팅"""
-        if self.raw_data is None: return None
-        
-        # 1. 7-가죽나무 통합: 모든 번호를 평등하게 카운트
-        all_numbers = self.raw_data.values.flatten()
-        total_freq = Counter(all_numbers)
-        
-        # 2. 배추 가중치: 최근 15회차의 강력한 흐름 분석
-        recent_pool = self.raw_data.head(15).values.flatten()
-        recent_freq = Counter(recent_pool)
-        
-        # 3. 확률 점수 산출 (패턴 고정관념 폐기)
-        scores = {}
-        for i in range(1, 46):
-            # 최근 흐름(70%) + 전체 흐름(30%)의 '싱싱한' 가중치 적용
-            scores[i] = (total_freq[i] * 0.3) + (recent_freq[i] * 0.7)
-            
-        return scores
+    // [7-가죽나무 통합] 데이터 로드 (보너스 포함 7개 번호 동일 지위)
+    loadData() {
+        const content = fs.readFileSync(this.filePath, 'utf-8');
+        return content.trim().split('\n')
+            .map(line => line.split('\t').slice(2, 9).map(Number))
+            .filter(row => row.length === 7);
+    }
 
-    def generate_5_combinations(self):
-        """이번 회차 가장 확률이 좋은 5조합 생성"""
-        scores = self.baechu_backtester()
-        if not scores: return
-        
-        # 점수가 높은 상위 22개 번호를 분석 풀(Pool)로 지정
-        sorted_indices = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        top_pool = [n for n, s in sorted_indices[:22]]
-        
-        print(f"### [두 나물 오직] 배추 로직 통합 분석 결과 ###")
-        print(f"분석 범위: 1회 ~ {len(self.raw_data)}회 (보너스 포함 7개 번호)")
-        print("-" * 45)
-        
-        for i in range(1, 6):
-            # 7-가죽나무 원칙에 따라 7개 번호 추출
-            combo = sorted(np.random.choice(top_pool, 7, replace=False))
-            print(f"추천 조합 {i:02d}: {combo}")
-        print("-" * 45)
+    generate(totalCount = 5) {
+        const data = this.loadData();
+        const past12Rounds = data.slice(0, 12); // 최근 12회차 전수 분석
 
-# --- 실행부 ---
-if __name__ == "__main__":
-    # 파일명은 사용자님이 업로드하신 파일명과 일치해야 합니다.
-    BAECHU_ENGINE = TwoNamulLogic('로또1-1205당첨리스트.txt')
-    BAECHU_ENGINE.generate_5_combinations()
+        // 1. 빈도 및 구간 통계 (가변 구간 에너지 계산용)
+        let hotNumbers = {};
+        let sectionCounts = [0, 0, 0, 0, 0]; // 0~4 구간
+
+        past12Rounds.forEach(row => {
+            row.forEach(num => {
+                hotNumbers[num] = (hotNumbers[num] || 0) + 1;
+                let sIdx = Math.min(Math.floor((num - 1) / 10), 4);
+                sectionCounts[sIdx]++;
+            });
+        });
+
+        // 2. [엄격 퇴출] 12회 내 5회 이상 출현수 제거
+        const banList = Object.keys(hotNumbers).filter(n => hotNumbers[n] >= 5).map(Number);
+
+        // 3. 가변 구간 에너지 가중치 산출 (침체 구간 점수 증폭)
+        const avgHit = sectionCounts.reduce((a, b) => a + b) / 5;
+        const sectionWeights = sectionCounts.map(count => 
+            Math.max(1.0, Math.min(2.0, (avgHit + 1) / (count + 1)))
+        );
+
+        // 4. [두 나물 오직] 풀 구성 (상위 22수 추출)
+        let candidates = [];
+        for (let i = 1; i <= 45; i++) {
+            if (banList.includes(i)) continue;
+            let score = 1.0 / ((hotNumbers[i] || 0) + 1);
+            let sIdx = Math.min(Math.floor((i - 1) / 10), 4);
+            score *= sectionWeights[sIdx]; // 에너지 증폭 적용
+            candidates.push({ num: i, score });
+        }
+
+        const final12Core = candidates.sort((a, b) => b.score - a.score).slice(0, 12).map(v => v.num);
+
+        // 5. 최종 5조합 출력 디자인
+        console.log("=== [배추] v2.8 통합 로직 분석 결과 ===");
+        console.log(`퇴출 명단(과열): ${banList.join(', ')}`);
+        console.log(`핵심 12수: ${final12Core.join(', ')}`);
+        console.log("---------------------------------------");
+
+        for (let i = 1; i <= totalCount; i++) {
+            let combo = [];
+            if (i === 1) {
+                combo = final12Core.slice(0, 7); // 1번 조합: 최상위 에너지 7수
+            } else {
+                let pool = [...final12Core];
+                while (combo.length < 7) {
+                    let idx = Math.floor(Math.random() * pool.length);
+                    combo.push(pool.splice(idx, 1)[0]);
+                }
+            }
+            console.log(`조합 ${i}: [ ${combo.sort((a, b) => a - b).join(', ')} ]`);
+        }
+    }
+}
+
+// 실행
+const engine = new BaechuLogicV2_8('로또1-1205당첨리스트.txt');
+engine.generate();
